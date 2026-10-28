@@ -127,11 +127,11 @@ AI가 이를 다듬은 문구가 현재의 ‘아주 좋아요’, ‘좋아요,
 <a name="app-updates"></a>
 
 <details>
-<summary>앱 안의 업데이트 소식</summary>
+<summary>앱 업데이트 내역</summary>
 
-현재 버전(v1.7.2)의 업데이트 소식입니다. 앱 코드로 화면을 재현해 캡처했으며, 이미지를 누르면 크게 볼 수 있습니다.
+첫 버전부터 현재 버전(v1.7.2)까지의 업데이트 내역을 모두 펼쳤습니다. 앱 코드로 재현한 화면이며, 이미지를 누르면 크게 볼 수 있습니다.
 
-[<img src="docs/images/06_release_notes.png" width="360" alt="현재 앱 v1.7.2의 업데이트 소식. 휴대폰 알림과 알림 목록, 회원·트레이너별 알림을 안내하는 화면">](docs/images/06_release_notes.png)
+[<img src="docs/images/06_release_notes.png" width="360" alt="현재 앱 v1.7.2에서 이전 업데이트 내역을 모두 펼친 화면. v1.7부터 v1.0까지의 변경 내용">](docs/images/06_release_notes.png)
 
 </details>
 
