@@ -1,16 +1,16 @@
 # 식단노트 — 직접 기획하고 운영하는 식단 관리 앱
 
-PT샵에서 식단 관리를 받으려면 먹은 음식의 사진을 트레이너에게 보내야 했습니다. 트레이너는 개인 카카오톡으로 사진을 보내기 부담스러워하는 회원이 많아 관리가 잘 이어지지 않는다고 했습니다. 저도 사진을 보내지 않던 회원 중 한 명이었습니다.
+**식단노트는 제가 다니는 PT센터에서 트레이너와 회원들이 함께 쓰는 앱입니다.** 회원이 식사를 기록하면 담당 트레이너가 확인하고 피드백을 남깁니다.
 
-트레이너가 전용 앱을 제안했고, 제가 직접 만들어 보기로 했습니다. 회원은 식사를 기록하고, 트레이너는 담당 회원의 기록을 모아 확인하며 피드백을 남기는 서비스입니다. 저는 만들 범위와 사용 방식을 정하고 회원·트레이너 화면을 직접 써 보며 고쳤습니다. 구현은 Claude Code에, 계획과 코드 검토는 Codex에 맡겼습니다.
+원래는 식단 사진을 트레이너에게 카카오톡으로 보내는 방식이었습니다. 저도 식단 관리를 받고 싶었지만, 개인 카카오톡으로 사진을 보내는 게 부담스러워 잘 보내지 않았습니다. 트레이너도 비슷한 회원이 많다며 전용 앱을 제안했고, 제가 직접 만들어 보기로 했습니다.
 
-이렇게 만든 **식단노트는 PT샵 한 곳에서 실제로 사용하고 있습니다.** 현재의 사용 모습, 만드는 과정에서 제가 내린 결정, 앞으로 발전시키려는 방향을 소개합니다.
+어떤 기능부터 만들지, 회원과 트레이너가 어떻게 쓸지는 제가 정했습니다. Claude Code에 구현을, Codex에 계획과 코드 검토를 맡기고, 양쪽 화면을 직접 써 보며 고쳤습니다.
 
 ## 1. 회원이 기록하고, 트레이너가 피드백하는 서비스
 
 회원이 식사 시각·음식·사진과 함께 말을 남기면, 트레이너는 담당 회원들의 기록을 한 목록에서 확인합니다. 식사를 평가하거나 답글을 쓰면 회원의 피드백 화면에 모입니다. 대화는 해당 식사에 붙어 있어, 어떤 음식을 두고 나눈 이야기인지 함께 볼 수 있습니다.
 
-아래 화면에서 회원은 오늘 기록한 끼니를, 트레이너는 아직 확인할 식사와 답할 말을, 다시 회원은 식사별 평가와 답글을 확인합니다.
+회원이 식사를 남긴 뒤 피드백을 받기까지의 과정입니다.
 
 | 회원의 기록 | 트레이너의 확인 | 회원의 피드백 |
 |---|---|---|
@@ -22,7 +22,7 @@ PT샵에서 식단 관리를 받으려면 먹은 음식의 사진을 트레이�
 
 ### 실제 사용 현황
 
-10월 20일 처음 배포하고, 23일 트레이너와 저 두 명으로 사용을 시작했습니다. 27일부터 PT샵 회원들에게 넓혔습니다.
+10월 20일 첫 버전을 배포했습니다. 23일부터 담당 트레이너와 제가 사용했고, 27일부터는 센터의 다른 회원들도 쓰기 시작했습니다.
 
 | 항목 | 2026년 10월 28일 16시 기준 |
 |---|---|
@@ -30,17 +30,17 @@ PT샵에서 식단 관리를 받으려면 먹은 음식의 사진을 트레이�
 | 식사 기록 | 10월 27일부터 집계 시점까지 회원 18명이 46건 기록 |
 | 트레이너 처리 | 같은 기간 42건 확인·평가, 답글 23개 |
 
-운영 DB에서 집계했으며 테스트 계정은 제외했습니다. 식사 기록과 피드백이 실제로 오가기 시작한 단계입니다. 기록 습관이 얼마나 달라졌는지, 트레이너의 업무 시간이 줄었는지는 아직 측정하지 않았습니다.
+운영 DB에서 집계했으며 테스트 계정은 제외했습니다.
 
 ## 2. 직접 쓰면서 정한 세 가지
 
-### 먼저 PT샵 한 곳에서 쓸 수 있는 범위로 줄였습니다
+### 제가 다니는 센터에 필요한 기능부터 만들었습니다
 
-첫 기획안은 회원 100명 규모의 스토어 앱과 관리자 웹을 외주로 만드는 안이었습니다. 제가 만들려던 것은 트레이너 몇 명과 그 회원이 함께 쓸 서비스였습니다. 개발도 제가 AI에 맡겨 진행할 생각이었으므로, 이 조건에 맞춰 범위를 다시 잡았습니다.
+첫 기획안은 회원 100명 규모의 스토어 앱과 관리자 웹을 외주로 만드는 안이었습니다. 제가 다니는 센터의 트레이너와 회원들이 쓸 앱인데, 시작부터 규모가 너무 컸습니다. 저는 AI를 활용해 직접 개발하기로 하고, 식사를 기록하고 피드백을 주고받는 데 필요한 기능부터 추렸습니다.
 
-회원의 식사 기록, 트레이너의 확인과 답변, 회원의 피드백 확인을 우선했습니다. 칼로리 자동 분석·결제·별도 채팅방·센터 관리자 웹은 제외했습니다. 앱은 링크로 전달하고 휴대폰 홈 화면에 추가해 쓰는 모바일 웹앱(PWA)으로 정했습니다. 닉네임과 숫자 6자리 PIN으로 가입하고, 회원이 담당 트레이너를 직접 고르게 했습니다.
+칼로리 자동 분석·결제·별도 채팅방·센터 관리자 웹은 제외했습니다. 앱은 링크로 전달하고 휴대폰 홈 화면에 추가해 쓰는 모바일 웹앱(PWA)으로 정했습니다. 닉네임과 숫자 6자리 PIN으로 가입하고, 회원이 담당 트레이너를 직접 고르게 했습니다.
 
-이 범위로 10월 20일 첫 버전을 배포했습니다. 처음부터 넣지 않은 알림과 인바디 기록은 이후에 추가했습니다. [기획안 세 판에서 남긴 것과 뺀 것](docs/01_문제와_범위_결정.md)
+첫 버전은 10월 20일에 배포했고, 이후 인바디 기록과 알림을 추가했습니다. [기획안 세 판에서 남긴 것과 뺀 것](docs/01_문제와_범위_결정.md)
 
 ### 식사 확인과 답변을 나눠, 답이 필요한 말에 집중하게 했습니다
 
@@ -54,7 +54,7 @@ PT샵에서 식단 관리를 받으려면 먹은 음식의 사진을 트레이�
 
 <img src="docs/images/02_trainer_reply_or_ack.png" width="320" alt="예시 대화: 감사합니다! 내일도 이렇게 먹어 볼게요. 답변 쓰기와 답변 없이 확인 중 고를 수 있는 화면">
 
-현재 이 규칙은 확인 목록과 알림에 함께 적용됩니다. 답글 작성이 얼마나 줄었는지는 아직 측정하지 않았습니다. [직접 써 보며 바꾼 과정과 현재 규칙](docs/02_트레이너_업무_흐름과_처리_규칙.md)
+확인 목록과 알림에도 같은 규칙을 적용해, 이미 처리한 메시지를 다시 답변 대기로 알리지 않게 했습니다. [직접 써 보며 바꾼 과정과 현재 규칙](docs/02_트레이너_업무_흐름과_처리_규칙.md)
 
 ### 알림은 트레이너에게 모아서, 회원에게 바로 보냅니다
 
@@ -62,27 +62,41 @@ PT샵에서 식단 관리를 받으려면 먹은 음식의 사진을 트레이�
 
 트레이너에게는 회원이 기록할 때마다 보내지 않고, 확인할 일이 있을 때 하루 3회(선택하면 5회) 건수를 모아 보냅니다. 회원에게는 피드백을 남긴 직후 알립니다. 처음 계획은 피드백도 3분간 모아 보내는 방식이었지만, 구현 중에 바로 보내게 바꿨습니다.
 
-기록 알림은 점심과 저녁을 따로 확인합니다. 그 끼니를 이미 남겼으면 보내지 않고, 회원이 받을 알림을 종류별로 고를 수 있게 했습니다. 알림 도입 뒤 기록량이나 재방문이 늘었는지는 아직 확인하지 않았습니다. [알림을 보내는 때와 받는 사람의 선택](docs/04_알림_설계.md)
+기록 알림은 점심과 저녁을 따로 확인합니다. 그 끼니를 이미 남겼으면 보내지 않고, 회원이 받을 알림을 종류별로 고를 수 있게 했습니다. [알림을 보내는 때와 받는 사람의 선택](docs/04_알림_설계.md)
 
-## 3. AI에 맡긴 일과 제가 결정한 일
+## 3. 제가 기획하고, AI에 구현과 검토를 맡겼습니다
 
-AI에는 기획안을 검토하고 코드를 구현하는 일을 맡겼습니다. 저는 직접 써 본 결과와 검토 내용을 보고 무엇을 바꿀지 정했습니다. 개발 중의 ‘사용자 요청’은 이처럼 제가 내린 요구와 결정을 뜻합니다.
+### 계정 복구는 회원 본인이 할 수 있게 바꿨습니다
+
+가입할 때 이메일이나 전화번호를 받지 않고 닉네임과 숫자 6자리 PIN을 쓰기로 했습니다. 그러다 보니 PIN을 잊은 회원에게 인증 메일이나 문자를 보낼 수 없었습니다. 처음에는 담당 트레이너가 새 PIN을 정해 주게 했습니다.
+
+Codex는 트레이너가 회원의 PIN을 바꿀 수 있으면 그 계정에 직접 로그인할 수도 있다고 지적했습니다. 저는 이 지적과 Codex가 제안한 아이디어를 보고, **연락처 없이도 회원이 직접 계정을 되찾는 절차**를 기획했습니다.
+
+회원이 가입할 때 복구 질문과 답을 정해 두고, PIN을 잊으면 그 질문에 답해 새 PIN을 설정하게 했습니다. 질문은 좋아하는 영화나 노래처럼 식단 기록만으로는 짐작하기 어려운 취향에 관한 것으로 골랐습니다.
+
+누군가 PIN을 바꾼 경우에는 기존에 로그인해 둔 기기로 알리고, 본인이 한 변경이 아니면 그 기기에서 계정을 되찾게 했습니다. 트레이너가 회원의 PIN을 대신 정하는 기능은 없앴습니다.
+
+이 기획을 Claude Code에 구현하게 하고 Codex에 다시 검토를 맡겼습니다. 복구 도중 다른 요청이 들어오는 상황 등은 재검토를 거치며 보완했습니다. [기획한 복구 절차와 구현 과정](docs/03_가입과_계정_보안.md)
+
+### 식단 평가의 문구와 점수도 직접 정했습니다
+
+평가 버튼의 문구는 회원이 읽을 피드백이기도 합니다. 저는 잘 먹은 식사는 격려하고, 조절이 필요한 식사는 알려주는 말로 쓰고 싶었습니다. 그래서 “너무 좋다”, “좋은데 좀 더”, “신경 써 달라”의 세 가지 느낌을 전달했습니다.
+
+AI가 이를 다듬은 문구가 현재의 ‘아주 좋아요’, ‘좋아요, 조금만 더’, ‘조절이 필요해요’입니다. 점수도 제가 5점 만점으로 정했습니다. 개별 식사에는 평가 문구를 보여주고, 두 인바디 측정 사이의 식단 평가를 모을 때는 각 평가를 5·3·1점으로 환산해 평균을 보여줍니다.
+
+### 구현과 검토를 나눠 맡겼습니다
 
 | 담당 | 맡은 일 |
 |---|---|
-| 저 | 서비스 범위와 우선순위, 화면과 처리 규칙, 직접 사용 점검, 검토 의견의 반영 여부, 출시 시점 |
-| Claude Code | 구현, 검증과 배포 도구 작성, 검증 실행, 변경 기록 |
-| Codex | 계획·코드 검토, 결함 재현, 알림 설정 안내와 문구 후보 작성 |
+| 저 | 서비스 범위와 우선순위, 계정 복구·식단 평가·알림 기획, 회원·트레이너 화면 사용 점검, 검토 의견의 반영 여부와 출시 시점 |
+| Claude Code | 기획에 따른 구현, 검증과 배포, 변경 기록 |
+| Codex | 계획·코드 검토, 결함 재현, 대안과 문구 제안 |
 
-제품에 어떤 표현을 쓸지도 제가 정했습니다. 식단 평가 버튼은 제가 전달한 “너무 좋다”, “좋은데 좀 더”, “신경 써 달라”는 느낌을 다듬었습니다. 현재 화면의 ‘아주 좋아요’, ‘좋아요, 조금만 더’, ‘조절이 필요해요’가 그 결과입니다.
-
-반면 계정 복구 방식은 검토 의견을 받아 바꿨습니다. 처음에는 PIN을 잊은 회원을 트레이너가 도와주게 했지만, Codex는 트레이너가 회원 계정으로 로그인할 수 있다는 문제를 찾았습니다. 트레이너의 재설정을 없애고 회원 본인이 계정을 되찾는 방식으로 바꿨습니다. [가입과 계정 복구](docs/03_가입과_계정_보안.md)
-
-10월 27일에는 리뷰 기준도 요청했습니다. 기능이 동작하는지에 더해, 기존 앱과 같은 규칙을 쓰는지와 다음 변경을 감당할 수 있는지까지 검토하게 했습니다. 구현과 별도로 검토를 맡긴 과정과 그 한계는 [개발 방식과 검토](docs/06_개발_방식과_검토.md)에 정리했습니다.
+기능을 하나씩 추가하다 보면 같은 동작도 화면과 알림에서 다르게 처리할 수 있습니다. 예를 들어 ‘답변 없이 확인’한 메시지를 알림에서는 여전히 답변 대기로 셀 수 있습니다. 저는 10월 27일 리뷰 기준을 요청하면서 새 기능이 기존 앱과 같은 규칙을 쓰는지, 다음 변경 때에도 고치기 쉬운지 함께 검토하게 했습니다. [개발 방식과 검토](docs/06_개발_방식과_검토.md)
 
 ## 4. 앞으로는 운동과 식단을 함께 보려 합니다
 
-PT샵에서 몸의 변화를 돌아보려면 식단과 함께 운동도 봐야 합니다. 현재 트레이너는 구글 스프레드시트에서 운동 루틴을 짜고 회원은 그 내용을 확인합니다. 식단노트에는 식단과 인바디 기록이 있지만, 운동 계획은 아직 따로 있습니다.
+제가 다니는 센터의 트레이너는 구글 스프레드시트에 운동 루틴을 짜 줍니다. 운동 계획은 그 시트에서, 식단과 인바디 기록은 식단노트에서 확인합니다. 몸이 어떻게 달라졌는지 돌아보려면 운동과 식단을 함께 볼 수 있어야 한다고 생각했습니다.
 
 먼저 **스프레드시트의 운동 루틴을 식단노트로 가져오려 합니다.** 트레이너가 익숙한 방식으로 루틴을 작성하면서, 회원은 앱에서 식단과 운동 계획을 함께 볼 수 있게 하고 싶습니다.
 
@@ -125,11 +139,13 @@ PT샵에서 몸의 변화를 돌아보려면 식단과 함께 운동도 봐야 �
 <details>
 <summary>Summary in English</summary>
 
-Mealnote is a meal logging and feedback app used at one personal-training studio. My trainer suggested a dedicated app because members were reluctant to send meal photos through personal messaging. I was one of those members.
+Mealnote is a meal logging and feedback app used at the personal-training studio I attend. My trainer suggested a dedicated app because members were reluctant to send meal photos through personal messaging. I was one of those members.
 
-I defined the scope and product rules, tested both member and trainer workflows, and decided what to change and when to release. Claude Code implemented the app; Codex reviewed plans and code. One decision was to distinguish reviewing a meal from replying to a message, allowing trainers to acknowledge a message without writing a reply.
+I defined the scope and product rules, tested both member and trainer workflows, and decided what to change and when to release. Claude Code implemented the app; Codex reviewed plans and code.
 
-As of October 28, 2026, at 16:00 KST, the app had 2 trainers (1 with assigned members) and 26 members, including me and excluding test accounts. From October 27 to that cutoff, 18 members logged 46 meals; trainers reviewed or rated 42 meals and posted 23 replies. These are early usage figures, not evidence of improved habits or reduced workload.
+I separated meal review from message replies so trainers could acknowledge a message without writing back. After reviewing ideas from Codex, I also planned a self-service account recovery flow: members can reset a forgotten PIN without sharing contact details or asking a trainer to set a new one.
+
+As of October 28, 2026, at 16:00 KST, the app had 2 trainers (1 with assigned members) and 26 members, including me and excluding test accounts. From October 27 to that cutoff, 18 members logged 46 meals; trainers reviewed or rated 42 meals and posted 23 replies.
 
 I plan to bring trainers' Google Sheets workout routines into the app, explain routine changes and their goals, and develop reports that review workouts, diet and body-composition changes between measurements. These extensions are not implemented yet.
 
