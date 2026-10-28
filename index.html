@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F5F5F5" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // 저장된 화면 테마를 첫 화면 그리기 전에 적용한다(다크 저장 상태에서 라이트가 먼저 보이는 깜빡임 방지). src/lib/theme.ts와 같은 규칙.
+      (function () {
+        var t = 'light';
+        try { t = localStorage.getItem('mealnote:theme') === 'dark' ? 'dark' : 'light'; } catch (e) {}
+        var r = document.documentElement;
+        r.setAttribute('data-theme', t);
+        r.style.colorScheme = t;
+        r.style.background = t === 'dark' ? '#171B19' : '#F5F5F5';
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute('content', t === 'dark' ? '#171B19' : '#F5F5F5');
+      })();
+    </script>
+    <meta name="description" content="회원의 식단 기록과 트레이너 피드백을 잇는 앱" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="식단노트" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
+    <title>식단노트</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+{
+  "name": "mealnote",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/copy-ocr-assets.mjs",
+    "dev": "vite",
+    "build": "node scripts/copy-ocr-assets.mjs && tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "db:start": "colima start --cpu 2 --memory 2 --disk 20 --vm-type vz --mount-type virtiofs && supabase start -x realtime,imgproxy,mailpit,postgres-meta,studio,logflare,vector,supavisor",
+    "db:stop": "supabase stop && colima stop",
+    "db:reset": "supabase db reset --local",
+    "check": "sh scripts/check.sh all",
+    "check:backend": "sh scripts/check.sh backend",
+    "check:e2e": "sh scripts/check.sh e2e",
+    "check:ocr": "sh scripts/check.sh ocr",
+    "check:unit": "sh scripts/check.sh unit",
+    "check:component": "sh scripts/check.sh component",
+    "db:push": "supabase db push --linked",
+    "deploy": "sh scripts/deploy.sh",
+    "check:race": "sh scripts/check.sh race",
+    "check:update": "sh scripts/check.sh update",
+    "check:push": "sh scripts/check.sh push",
+    "push:setup": "node scripts/push-local-setup.mjs",
+    "phone:test": "sh scripts/phone-test.sh"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tesseract.js": "7.0.0"
+  },
+  "devDependencies": {
+    "@tesseract.js-data/eng": "^1.0.0",
+    "@tesseract.js-data/kor": "^1.0.0",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vite-pwa/assets-generator": "^2.0.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "oxlint": "^1.88.0",
+    "playwright": "^1.64.1",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.4",
+    "vite-plugin-pwa": "^2.0.0",
+    "wrangler": "^4.151.2"
+  }
+}

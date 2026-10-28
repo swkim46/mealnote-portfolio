@@ -1,0 +1,46 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
+
+# 검증 결과 화면
+test-results
+
+# 로컬 코드 리뷰 재현 스크립트
+/scripts/review-local/
+
+# 새 버전 적용 검증용 임시 빌드
+dist-update-test
+
+# 휴대폰 알림 시험 빌드(npm run phone:test)
+dist-phonetest
+
+# 인바디 글자 인식 파일(scripts/copy-ocr-assets.mjs가 node_modules에서 복사)
+/public/ocr/
