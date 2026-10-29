@@ -29,8 +29,8 @@
 | 항목 | 사용 현황 |
 |---|---|
 | 가입 | 트레이너 2명, 회원 29명 |
-| 식사 기록 | 회원 23명이 105건 기록(사진 첨부 65건) |
-| 트레이너 피드백 | 식사 71건 확인·평가(10월 28일까지 남긴 70건은 모두 확인), 답글 33개 |
+| 식사 기록 | 회원 23명이 105건 기록 |
+| 트레이너 피드백 | 식사 71건 확인·평가, 답글 33개 |
 
 2026년 10월 29일 17시 기준입니다. 식사 기록과 피드백은 10월 27일부터 집계했으며, 테스트 계정은 제외했습니다.
 
@@ -160,7 +160,7 @@ I defined the scope and product rules, tested both member and trainer workflows,
 
 I separated meal review from message replies so trainers could acknowledge a message without writing back. After reviewing ideas from Codex, I also planned a self-service account recovery flow: members can reset a forgotten PIN without sharing contact details or asking a trainer to set a new one.
 
-As of October 29, 2026, at 17:00 KST, the app had 2 trainers and 29 members, excluding test accounts. From October 27 to that cutoff, 23 members logged 105 meals, 65 of them with photos; trainers reviewed or rated 71 meals, including all 70 logged through October 28, and posted 33 replies.
+As of October 29, 2026, at 17:00 KST, the app had 2 trainers and 29 members, excluding test accounts. From October 27 to that cutoff, 23 members logged 105 meals; trainers reviewed or rated 71 meals and posted 33 replies.
 
 I plan to bring trainers' Google Sheets workout routines into the app, explain routine changes and their goals, and develop reports that review workouts, diet and body-composition changes between measurements. These extensions are not implemented yet.
 
