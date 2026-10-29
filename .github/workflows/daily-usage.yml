@@ -1,0 +1,50 @@
+name: Update daily usage
+
+on:
+  schedule:
+    - cron: '20 15 * * *' # 00:20 Asia/Seoul; report the previous completed day.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mealnote-daily-usage
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.repository == 'swkim46/mealnote-portfolio' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+      - name: Install chart dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-nanum
+          python3 -m venv "$RUNNER_TEMP/metrics-venv"
+          "$RUNNER_TEMP/metrics-venv/bin/pip" install -r scripts/metrics/requirements.txt
+      - name: Check metric rules
+        run: |
+          "$RUNNER_TEMP/metrics-venv/bin/python" -m unittest discover -s scripts/metrics -p 'test_*.py'
+      - name: Fetch aggregates and render charts
+        env:
+          METRICS_DATABASE_URL: ${{ secrets.METRICS_DATABASE_URL }}
+          MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
+        run: |
+          "$RUNNER_TEMP/metrics-venv/bin/python" scripts/metrics/update.py
+      - name: Publish chart and counts
+        run: |
+          git add -- README.md docs/data/usage.json docs/images/usage.svg docs/images/usage-mobile.svg
+          if git diff --cached --quiet; then
+            echo 'The published metrics are already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m '식단노트: 일별 사용 현황 자동 갱신'
+          git pull --rebase origin main
+          git push origin HEAD:main
