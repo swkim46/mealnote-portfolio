@@ -29,10 +29,10 @@
 <!-- usage-metrics:start -->
 <picture>
   <source media="(max-width: 600px)" srcset="docs/images/usage-mobile.svg">
-  <img src="docs/images/usage.svg" alt="식단노트 사용 추이. 10월 29일 기준 가입 회원 32명, 당일 활성 회원 21명, 누적 식단 기록 133건" width="1100">
+  <img src="docs/images/usage.svg" alt="식단노트 사용 추이. 10월 30일 기준 가입 회원 32명, 당일 활성 회원 14명, 누적 식단 기록 176건" width="1100">
 </picture>
 
-2026년 10월 29일까지의 기록입니다. 활성 회원은 그날 식단을 한 번 이상 작성한 회원이며, 가입 회원과 식단 기록은 누적입니다. 테스트 계정은 제외하고, 매일 전날까지 갱신합니다. [집계 기준](docs/reference/사용_현황_집계.md)
+2026년 10월 30일까지의 기록입니다. 활성 회원은 그날 식단을 한 번 이상 작성한 회원이며, 가입 회원과 식단 기록은 누적입니다. 테스트 계정은 제외하고, 매일 전날까지 갱신합니다. [집계 기준](docs/reference/사용_현황_집계.md)
 <!-- usage-metrics:end -->
 
 ## 2. 회원과 트레이너의 사용 방식에 맞춘 설계
@@ -162,7 +162,7 @@ I defined the scope and product rules, tested both member and trainer workflows,
 I separated meal review from message replies so trainers could acknowledge a message without writing back. After reviewing ideas from Codex, I also planned a self-service account recovery flow: members can reset a forgotten PIN without sharing contact details or asking a trainer to set a new one.
 
 <!-- usage-metrics-en:start -->
-Through October 29, 2026 (KST), the app had 32 registered members and 133 meal records. On that day, 21 members logged at least one meal. Test accounts are excluded; the charts update daily after the Korean day ends.
+Through October 30, 2026 (KST), the app had 32 registered members and 176 meal records. On that day, 14 members logged at least one meal. Test accounts are excluded; the charts update daily after the Korean day ends.
 <!-- usage-metrics-en:end -->
 
 I plan to bring trainers' Google Sheets workout routines into the app, explain routine changes and their goals, and develop reports that review workouts, diet and body-composition changes between measurements. These extensions are not implemented yet.
