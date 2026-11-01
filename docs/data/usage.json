@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "timezone": "Asia/Seoul",
-  "through": "2026-10-31",
+  "through": "2026-11-01",
   "series": [
     {
       "date": "2026-10-23",
@@ -56,6 +56,12 @@
       "members_total": 32,
       "active_members": 9,
       "meals_total": 199
+    },
+    {
+      "date": "2026-11-01",
+      "members_total": 32,
+      "active_members": 9,
+      "meals_total": 222
     }
   ]
 }
