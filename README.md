@@ -1,18 +1,24 @@
-# 식단노트 — 직접 기획하고 운영하는 식단 관리 앱
+# FITORY — 회원의 식단·운동 기록과 트레이너의 코칭을 연결하는 앱
 
-**식단노트는 제가 다니는 PT센터에서 트레이너와 회원들이 함께 쓰는 앱입니다.** 회원이 식사를 기록하면 담당 트레이너가 확인하고 피드백을 남깁니다.
+**FITORY는 제가 다니는 PT센터에서 트레이너와 회원들이 함께 쓰는 앱입니다.** 회원은 식단과 운동을 기록하고, 트레이너는 이를 확인해 피드백을 남깁니다. 운동 루틴부터 실제 수행, 인바디 변화까지 함께 보며 다음 계획을 정할 수 있도록 만들었습니다.
 
 원래는 식단 사진을 트레이너에게 카카오톡으로 보내는 방식이었습니다. 저도 식단 관리를 받고 싶었지만, 개인 카카오톡으로 사진을 보내는 게 부담스러워 잘 보내지 않았습니다. 트레이너도 비슷한 회원이 많다며 전용 앱을 제안했고, 제가 직접 만들어 보기로 했습니다.
 
 어떤 기능부터 만들지, 회원과 트레이너가 어떻게 쓸지는 제가 정했습니다. Claude Code에 구현을, Codex에 계획과 코드 검토를 맡기고, 양쪽 화면을 직접 써 보며 고쳤습니다.
 
-앱에서 안내한 [실제 업데이트 내역](#app-updates)도 아래에서 볼 수 있습니다.
+식단 기록에서 시작한 앱을 운동과 체성분 변화까지 연결했습니다. 트레이너가 쓰던 스프레드시트는 유지하고, 회원이 앱에서 남긴 기록을 코칭에 함께 활용하도록 구성했습니다.
 
 ## 1. 회원이 기록하고, 트레이너가 피드백하는 서비스
 
 회원이 먹은 음식과 사진, 트레이너에게 묻고 싶은 내용을 남기면 담당 트레이너가 한 목록에서 확인합니다. 식사를 평가하거나 답글을 쓰면 회원의 피드백 화면에 모입니다. 대화는 해당 식사에 붙어 있어, 어떤 음식을 두고 나눈 이야기인지 함께 볼 수 있습니다.
 
-회원이 식사를 남긴 뒤 피드백을 받기까지의 과정입니다.
+| 회원이 하는 일 | 트레이너가 확인하는 것 |
+|---|---|
+| 식단과 질문을 기록하고 피드백 확인 | 아직 확인하지 않은 식사와 답변할 메시지 |
+| 루틴을 보고 실제 중량·횟수·완료 세트 기록 | 새 운동 기록과 회원별 수행 내역 |
+| 인바디·공복 체중을 기록하고 변화 확인 | 같은 기간의 식단·운동·체성분 변화와 총평 |
+
+아래는 식단 기록과 피드백의 기본 흐름을 예시 계정으로 보여주는 화면입니다.
 
 | 회원의 기록 | 트레이너의 확인 | 회원의 피드백 |
 |---|---|---|
@@ -43,9 +49,9 @@
 
 칼로리 자동 분석·결제·별도 채팅방·센터 관리자 웹은 제외했습니다. 앱은 링크로 전달하고 휴대폰 홈 화면에 추가해 쓰는 모바일 웹앱(PWA)으로 정했습니다. 닉네임과 숫자 6자리 PIN으로 가입하고, 회원이 담당 트레이너를 직접 고르게 했습니다.
 
-식단 기록과 피드백부터 쓸 수 있게 만든 뒤, 인바디 기록과 알림을 추가했습니다. [기획안 세 판에서 남긴 것과 뺀 것](docs/01_문제와_범위_결정.md)
+현재도 기록과 코칭에 필요한 범위를 중심으로 기능을 정합니다. 식단·운동·인바디를 연결하되, 트레이너의 판단을 대신하는 자동 처방이나 별도 채팅 서비스로 범위를 넓히지는 않았습니다. [제품 범위와 그 판단 근거](docs/01_문제와_범위_결정.md)
 
-### 식사 확인과 메시지 답변을 구분했습니다
+### 식사 확인과 메시지 답변을 구분합니다
 
 트레이너가 회원의 질문을 놓치지 않으면서 필요한 답변에 집중할 수 있어야 했습니다. 회원·트레이너 화면을 번갈아 써 보니, 두 가지가 모두 불편했습니다.
 
@@ -57,9 +63,9 @@
 
 <img src="docs/images/02_trainer_reply_or_ack.png" width="320" alt="예시 대화: 감사합니다! 내일도 이렇게 먹어 볼게요. 답변 쓰기와 답변 없이 확인 중 고를 수 있는 화면">
 
-확인 목록과 알림에도 같은 규칙을 적용해, 이미 처리한 메시지를 다시 답변 대기로 알리지 않게 했습니다. [직접 써 보며 바꾼 과정과 현재 규칙](docs/02_트레이너_업무_흐름과_처리_규칙.md)
+확인 목록과 알림에도 같은 규칙을 적용해, 이미 처리한 메시지를 다시 답변 대기로 알리지 않게 했습니다. 트레이너 화면에는 회원의 새 운동 기록도 모아 보여주고, 회원별 식단·루틴·운동·인바디로 바로 이동할 수 있게 했습니다. [직접 써 보며 바꾼 과정과 현재 규칙](docs/02_트레이너_업무_흐름과_처리_규칙.md)
 
-### 식단 평가의 문구와 점수도 직접 정했습니다
+### 식단 평가는 피드백과 기간별 비교에 함께 씁니다
 
 평가 버튼의 문구는 회원이 읽을 피드백이기도 합니다. 저는 잘 먹은 식사는 격려하고, 조절이 필요한 식사는 알려주는 말로 쓰고 싶었습니다. 그래서 “너무 좋다”, “좋은데 좀 더”, “신경 써 달라”의 세 가지 느낌을 전달했습니다.
 
@@ -97,19 +103,17 @@ AI가 이를 다듬은 문구가 현재의 ‘아주 좋아요’, ‘좋아요,
 
 기능을 하나씩 추가하다 보면 같은 일을 화면과 알림에서 다르게 처리할 수 있습니다. 예를 들어 트레이너가 ‘답변 없이 확인’한 메시지를 알림에서는 여전히 답변 대기로 셀 수 있습니다.
 
-저는 리뷰 기준을 요청하면서 새 기능이 기존 앱과 같은 규칙을 쓰는지, 다음 변경 때에도 고치기 쉬운지 함께 검토하게 했습니다. Codex가 문제를 재현하고, Claude Code가 수정한 뒤 같은 조건에서 다시 확인했습니다. [개발 방식과 검토](docs/06_개발_방식과_검토.md)
+저는 리뷰 기준을 요청하면서 새 기능이 기존 앱과 같은 규칙을 쓰는지, 다음 변경 때에도 고치기 쉬운지 함께 검토하게 했습니다. 운동 기록도 목록·상세·보고서에서 같은 값을 사용하고, 시트 반영에 실패해도 앱에 저장한 기록은 남도록 합니다. Codex가 문제를 재현하고, Claude Code가 수정한 뒤 같은 조건에서 다시 확인합니다. [개발 방식과 검토](docs/06_개발_방식과_검토.md)
 
-## 4. 앞으로는 운동과 식단을 함께 보려 합니다
+## 4. 운동과 식단을 함께 보고 다음 목표를 정합니다
 
-제가 다니는 센터의 트레이너는 구글 스프레드시트에 운동 루틴을 짜 줍니다. 운동 계획은 그 시트에서, 식단과 인바디 기록은 식단노트에서 확인합니다. 몸이 어떻게 달라졌는지 돌아보려면 운동과 식단을 함께 볼 수 있어야 한다고 생각했습니다.
+제가 다니는 센터의 트레이너는 구글 스프레드시트에 운동 루틴을 짜 줍니다. 이 작성 방식을 유지하면서 회원은 FITORY에서 루틴을 확인하고 실제 수행을 기록합니다. 앱에 남긴 수행 기록은 연결된 시트에도 반영합니다. 트레이너가 직접 적거나 고친 값은 덮어쓰지 않도록 했습니다.
 
-먼저 **스프레드시트의 운동 루틴을 식단노트로 가져오려 합니다.** 트레이너가 익숙한 방식으로 루틴을 작성하면서, 회원은 앱에서 식단과 운동 계획을 함께 볼 수 있게 하고 싶습니다.
+운동 중에는 계획된 중량과 횟수뿐 아니라 해당 운동을 마지막으로 한 날짜와 기록도 함께 봅니다. 이전 기록을 확인하러 이동해도 작성 중인 입력은 유지됩니다. 새 운동 기록에는 최근 수행한 중량을 참고하고, 동작별 메모는 루틴이 바뀌어도 이어집니다. 트레이너의 설명과 회원 자신의 메모는 칸을 나눠 서로 덮어쓰지 않습니다.
 
-루틴이 바뀌면 이전과 달라진 운동뿐 아니라 **이번 루틴의 중점과 목표**도 설명하려 합니다. 회원이 어떤 운동을 해야 하는지와 함께 왜 그 운동을 하는지 이해하는 것이 목적입니다. 변경 이유는 트레이너가 제공한 설명을 바탕으로 정리할 생각입니다.
+인바디 변화 보고서는 **두 측정 사이의 같은 기간**을 기준으로 식단 평가, 운동 횟수와 중량 변화, 체성분 변화를 함께 보여줍니다. 트레이너는 이 자료에 총평을 남깁니다. 운동 계획을 받았다는 것과 실제로 수행했다는 것을 구분하고, 기록된 변화와 그 원인에 대한 해석도 나눴습니다. 회원과 트레이너가 함께 기록을 읽고 다음 계획을 논의할 수 있도록 한 것입니다.
 
-다음으로는 **두 번의 인바디 측정 사이에 운동과 식단이 어땠는지 돌아보는 보고서**를 만들고 싶습니다. 현재도 그 기간의 식단 평가와 체성분 변화를 함께 보여줍니다. 여기에 운동 루틴과 수행 기록을 더해, 운동·식단이 몸의 변화에 어떤 영향을 주었을지 살펴보고 다음 목표를 논의할 자료로 발전시키려 합니다.
-
-계획한 운동과 실제로 한 운동, 기록에서 확인한 변화와 그 원인에 대한 해석은 나눠 보여줄 생각입니다. 실제 수행 기록을 어떻게 받을지는 더 정해야 합니다. 이 세 가지는 아직 구현하지 않은 방향이며 출시 일정도 정하지 않았습니다. [현재 기능에서 출발한 확장 계획](docs/07_앞으로의_계획.md)
+[루틴·수행 기록·변화 보고서를 연결한 설계](docs/07_앞으로의_계획.md)
 
 ## 5. 설계 기록과 구현 자료
 
@@ -121,32 +125,21 @@ AI가 이를 다듬은 문구가 현재의 ‘아주 좋아요’, ‘좋아요,
 | 누구에게 언제 알릴 것인가 | [알림 설계](docs/04_알림_설계.md) |
 | 실제 사용 중인 앱을 어떻게 고쳤는가 | [출시 후 운영](docs/05_출시_후_운영.md) |
 | AI와 어떻게 일을 나눴는가 | [개발 방식과 검토](docs/06_개발_방식과_검토.md) |
-| 운동·식단·인바디를 어떻게 함께 볼 것인가 | [앞으로의 계획](docs/07_앞으로의_계획.md) |
+| 운동·식단·인바디를 어떻게 함께 볼 것인가 | [운동·식단·인바디 연결](docs/07_앞으로의_계획.md) |
 
 코드는 React·Vite, Supabase, Cloudflare Pages를 사용합니다. 기술 구성과 실행·검증 방법은 [운영 안내](docs/운영_안내.md)에, 기획안·화면 시안·검토 원문은 [참고 자료](docs/reference/)에 있습니다.
-
-<a name="app-updates"></a>
-
-<details>
-<summary>앱 업데이트 내역</summary>
-
-첫 버전부터 현재 버전(v1.7.2)까지의 업데이트 내역을 모두 펼쳤습니다. 앱 코드로 재현한 화면이며, 이미지를 누르면 크게 볼 수 있습니다.
-
-[<img src="docs/images/06_release_notes.png" width="360" alt="현재 앱 v1.7.2에서 이전 업데이트 내역을 모두 펼친 화면. v1.7부터 v1.0까지의 변경 내용">](docs/images/06_release_notes.png)
-
-</details>
 
 ### 저장소 구성과 공개 범위
 
 | 경로 | 내용 |
 |---|---|
-| `docs/` | 설계 결정, 화면, 확장 계획, 실행 안내 |
+| `docs/` | 현재 기능과 설계 판단, 화면, 실행 안내 |
 | `docs/reference/` | 기획안 세 판, 초기 화면 시안, 계획·코드 검토 자료 |
 | `src/` | 회원·트레이너 화면과 앱의 처리 규칙 |
 | `supabase/` | 데이터 구조·권한 규칙·서버 기능 |
 | `scripts/` | 검증·개발 환경·배포 도구 |
 
-현재 기능과 코드는 **v1.7.2** 기준입니다. 이 저장소는 비공개 운영 저장소의 `main`(운영 커밋 `877632d`)을 정제한 사본으로, 이곳의 Git 이력은 사본을 만든 시점부터 시작합니다. [변경 기록](CHANGELOG.md)의 커밋 번호와 태그는 운영 저장소의 것입니다.
+문서에는 현재 제품의 사용 흐름과 설계 판단을 담았습니다. 기획 원문과 공개용으로 정리한 구현·검토 자료를 함께 연결했습니다.
 
 실제 사용자의 기록·사진·실명, 운영 주소와 프로젝트 식별자는 포함하지 않았습니다. 사용 현황은 집계 수치만 싣고, 식단과 대화 화면은 예시 데이터로 재현했습니다. 코드의 `https://mealnote.example`은 자리표시자이며 등록 코드 해시도 예시 값입니다.
 
@@ -155,7 +148,7 @@ AI가 이를 다듬은 문구가 현재의 ‘아주 좋아요’, ‘좋아요,
 <details>
 <summary>Summary in English</summary>
 
-Mealnote is a meal logging and feedback app used at the personal-training studio I attend. My trainer suggested a dedicated app because members were reluctant to send meal photos through personal messaging. I was one of those members.
+FITORY is a meal and workout logging app used at the personal-training studio I attend. My trainer suggested a dedicated app because members were reluctant to send meal photos through personal messaging. I was one of those members.
 
 I defined the scope and product rules, tested both member and trainer workflows, and decided what to change and when to release. Claude Code implemented the app; Codex reviewed plans and code.
 
@@ -165,8 +158,8 @@ I separated meal review from message replies so trainers could acknowledge a mes
 Through November 10, 2026 (KST), the app had 46 registered members and 622 meal records. On that day, 14 members logged at least one meal. Test accounts are excluded; the charts update daily after the Korean day ends.
 <!-- usage-metrics-en:end -->
 
-I plan to bring trainers' Google Sheets workout routines into the app, explain routine changes and their goals, and develop reports that review workouts, diet and body-composition changes between measurements. These extensions are not implemented yet.
+FITORY connects trainers' Google Sheets routines with members' workout logs. Members can check previous sets and keep exercise-specific notes across routines; syncing respects values entered directly in the sheet. Reports bring meal feedback, workout records and body-composition changes into the same measurement period, with a separate trainer assessment.
 
-This repository contains a sanitized v1.7.2 snapshot. Production identifiers and individual user records are excluded; screenshots use example accounts.
+This repository presents the product decisions and selected implementation materials. Individual user records and production identifiers are excluded; screenshots use example accounts.
 
 </details>
