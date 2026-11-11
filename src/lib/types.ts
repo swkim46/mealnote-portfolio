@@ -37,6 +37,8 @@ export interface Meal {
   /** 트레이너 평가 1~3(src/lib/rating.ts), 없으면 null */
   rating: 1 | 2 | 3 | null;
   rated_at: string | null;
+  /** 트레이너가 '추천 식단'으로 공유한 시각(v1.8), 아니면 null */
+  shared_at?: string | null;
   comments: Comment[];
   member_nickname: string;
 }

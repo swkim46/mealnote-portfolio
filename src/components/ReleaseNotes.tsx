@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { RELEASE_VERSION, RELEASES, releaseDate, VERSION_LABEL } from '../lib/releases';
+import { APP_NAME } from '../lib/brand';
 
 function ReleaseItem({ r }: { r: (typeof RELEASES)[number] }) {
   return (
@@ -41,7 +42,7 @@ export function ReleaseNotes() {
 export function VersionLine({ onClick }: { onClick?: () => void }) {
   const text = (
     <>
-      식단노트 {VERSION_LABEL} · 업데이트 소식
+      {APP_NAME} {VERSION_LABEL} · 업데이트 소식
     </>
   );
   return onClick ? (
@@ -49,6 +50,6 @@ export function VersionLine({ onClick }: { onClick?: () => void }) {
       {text}
     </button>
   ) : (
-    <p className="version-line">식단노트 {VERSION_LABEL}</p>
+    <p className="version-line">{APP_NAME} {VERSION_LABEL}</p>
   );
 }

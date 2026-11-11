@@ -3,7 +3,7 @@ import { roleLabel, signOut } from '../lib/auth';
 import { VERSION_LABEL } from '../lib/releases';
 import { TextSizeSetting } from './TextSizeControls';
 import { ThemeSetting } from './ThemeControls';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { mySecurityStatus } from '../lib/pin';
 import type { Profile } from '../lib/types';
 
@@ -37,9 +37,11 @@ interface PanelProps {
   onChangeNickname: () => void;
   /** 알림 설정(회원·트레이너만) */
   onNotifications?: () => void;
+  /** 역할별 설정 줄(회원: 식단 공유 허용) */
+  children?: ReactNode;
 }
 
-export function AccountPanel({ profile, detail, onFeedback, onReleases, onChangePin, onRecovery, onChangeNickname, onNotifications }: PanelProps) {
+export function AccountPanel({ profile, detail, onFeedback, onReleases, onChangePin, onRecovery, onChangeNickname, onNotifications, children }: PanelProps) {
   const [hasRecovery, setHasRecovery] = useState<boolean | null>(null);
   useEffect(() => {
     mySecurityStatus()
@@ -69,6 +71,7 @@ export function AccountPanel({ profile, detail, onFeedback, onReleases, onChange
           <Icon name="right" />
         </button>
       )}
+      {children}
       <button className="menu-row" onClick={onChangeNickname}>
         <Icon name="user" />
         <span>

@@ -120,6 +120,7 @@ export function ForgotPin({ initialNickname, onBack }: { role: Role; initialNick
       <h2 className="forgot-title">PIN을 잊으셨나요?</h2>
       {question === undefined ? (
         <form onSubmit={findQuestion}>
+      <fieldset className="form-lock" disabled={busy}>
           <p className="forgot-text">가입할 때 정한 질문에 답하면 새 PIN을 바로 정할 수 있어요.</p>
           <label className="field">
             닉네임
@@ -131,16 +132,18 @@ export function ForgotPin({ initialNickname, onBack }: { role: Role; initialNick
           <button className="primary full" type="submit" disabled={busy}>
             {busy ? '확인하는 중…' : '다음'}
           </button>
-        </form>
+        </fieldset>
+    </form>
       ) : question === null ? (
         <>
           <p className="forgot-text">이 닉네임은 PIN을 되찾을 수 있는 질문이 없어요.</p>
           <p className="forgot-text small">
-            로그인해 둔 휴대폰이 있다면 그 휴대폰의 내 정보에서 PIN을 바꿀 수 있어요. 없다면 새 닉네임으로 다시 가입해 주세요.
+            로그인해 둔 휴대폰이 있다면 그 휴대폰의 설정에서 PIN을 바꿀 수 있어요. 없다면 새 닉네임으로 다시 가입해 주세요.
           </p>
         </>
       ) : (
         <form onSubmit={reset}>
+      <fieldset className="form-lock" disabled={busy}>
           <p className="forgot-question">{RECOVERY_QUESTIONS[question]}</p>
           <label className="field">
             답
@@ -154,7 +157,8 @@ export function ForgotPin({ initialNickname, onBack }: { role: Role; initialNick
           <button className="primary full" type="submit" disabled={busy}>
             {busy ? '확인하는 중…' : '새 PIN으로 바꾸기'}
           </button>
-        </form>
+        </fieldset>
+    </form>
       )}
       <button type="button" className="text-button forgot-back" onClick={onBack}>
         로그인으로 돌아가기
@@ -212,6 +216,7 @@ export function PinChangeForm({ uid, onDone }: { uid: string; onDone: () => void
 
   return (
     <form onSubmit={submit}>
+      <fieldset className="form-lock" disabled={busy}>
       {useAnswer && question ? (
         <>
           <p className="forgot-question">{RECOVERY_QUESTIONS[question]}</p>
@@ -236,6 +241,7 @@ export function PinChangeForm({ uid, onDone }: { uid: string; onDone: () => void
       <button className="primary full" type="submit" disabled={busy}>
         {busy ? '바꾸는 중…' : 'PIN 바꾸기'}
       </button>
+    </fieldset>
     </form>
   );
 }
@@ -279,6 +285,7 @@ export function RecoverySetupForm({ onDone }: { onDone: () => void }) {
 
   return (
     <form onSubmit={submit}>
+      <fieldset className="form-lock" disabled={busy}>
       <p className="forgot-text">PIN을 잊었을 때 혼자 되찾는 데 쓰는 질문이에요. 한 번만 정하면 되고, 답은 운영자도 볼 수 없게 저장돼요.</p>
       <RecoveryFields question={question} setQuestion={setQuestion} answer={answer} setAnswer={setAnswer} />
       {pinField('지금 PIN', pin, setPin, 'current-password')}
@@ -288,6 +295,7 @@ export function RecoverySetupForm({ onDone }: { onDone: () => void }) {
       <button className="primary full" type="submit" disabled={busy}>
         {busy ? '저장하는 중…' : '저장하기'}
       </button>
+    </fieldset>
     </form>
   );
 }
@@ -323,6 +331,7 @@ export function ReclaimForm({ uid, onDone }: { uid: string; onDone: () => void }
 
   return (
     <form onSubmit={submit}>
+      <fieldset className="form-lock" disabled={busy}>
       <p className="forgot-text">
         새 PIN과 새 복구 질문을 정하면 계정을 되찾아요. 다른 기기는 모두 로그아웃되고, 운영자에게도 기록이 남아요.
       </p>
@@ -335,6 +344,7 @@ export function ReclaimForm({ uid, onDone }: { uid: string; onDone: () => void }
       <button className="primary full" type="submit" disabled={busy}>
         {busy ? '처리하는 중…' : '계정 되찾기'}
       </button>
+    </fieldset>
     </form>
   );
 }
@@ -395,6 +405,7 @@ export function NicknameChangeForm({ profile, onDone }: { profile: Profile; onDo
 
   return (
     <form onSubmit={submit}>
+      <fieldset className="form-lock" disabled={busy}>
       <p className="forgot-text small">
         지금 닉네임은 <b>{profile.nickname}</b>이에요. 닉네임은 로그인할 때도 쓰여서, 바꾸면 다음 로그인부터 새 닉네임을 입력해야 해요.
       </p>
@@ -407,6 +418,7 @@ export function NicknameChangeForm({ profile, onDone }: { profile: Profile; onDo
       <button type="submit" className="primary full" disabled={busy}>
         {busy ? '바꾸는 중…' : '닉네임 바꾸기'}
       </button>
+    </fieldset>
     </form>
   );
 }

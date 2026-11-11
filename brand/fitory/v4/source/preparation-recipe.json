@@ -1,0 +1,45 @@
+{
+  "sourceVersion": "v3",
+  "sourceAsset": "source/fitory-icon-primary-lime-dumbbell.png",
+  "cropBox": [
+    78,
+    82,
+    1172,
+    1176
+  ],
+  "cornerModels": [
+    [
+      "tl",
+      338,
+      340,
+      258
+    ],
+    [
+      "tr",
+      909,
+      341,
+      260
+    ],
+    [
+      "bl",
+      353,
+      904,
+      274
+    ],
+    [
+      "br",
+      898,
+      904,
+      274
+    ]
+  ],
+  "edgeFeatherPixels": 1,
+  "fallbackColorSample": [
+    100,
+    500
+  ],
+  "leftSampleMaxX": 630,
+  "rightSampleMinX": 1000,
+  "colorSampleCount": 16,
+  "method": "Deterministic crop of presentation margin/shadow and lime-only extension of baked rounded corners. No generative editing, redrawing or pose changes. The selected original and alternatives remain immutable in v3."
+}

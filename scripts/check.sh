@@ -8,6 +8,15 @@ if ! supabase status >/dev/null 2>&1; then
   exit 1
 fi
 status=0
+# 이번 검증의 실행 번호: 시험 계정 닉네임·의견에 붙고, 정리는 이 번호의 것만 지운다(다른 세션의 검증 자료를 지우지 않게)
+CHECK_RUN="${CHECK_RUN:-$(node -e 'process.stdout.write(Date.now().toString(36).slice(-4))')}"
+export CHECK_RUN
+echo "── 실행 번호 $CHECK_RUN"
+if [ "$what" = all ]; then
+  echo "── 정적 검사 (타입 검사·린트 오류. 경고는 실패로 치지 않는다)"
+  npx tsc -b || status=1
+  npx oxlint --quiet || status=1
+fi
 if [ "$what" = unit ] || [ "$what" = all ]; then
   echo "── 규칙 검증 (결산 한 줄 정리·인바디 숫자 고르기)"
   node scripts/unit-check.mjs || status=1
@@ -19,25 +28,25 @@ fi
 if [ "$what" = backend ] || [ "$what" = all ]; then
   echo "── 권한 검증 (로컬 DB)"
   node --env-file=.env.development.local --env-file=.env.local scripts/backend-check.mjs || status=1
-  sh scripts/cleanup-test-users.sh local
+  sh scripts/cleanup-test-users.sh local "$CHECK_RUN" || status=1
 fi
 if [ "$what" = race ] || [ "$what" = all ]; then
   echo "── 경쟁 상황 검증 (로컬 DB, 행 잠금으로 요청을 겹치게 함)"
   node --env-file=.env.development.local --env-file=.env.local scripts/race-check.mjs || status=1
-  sh scripts/cleanup-test-users.sh local
+  sh scripts/cleanup-test-users.sh local "$CHECK_RUN" || status=1
 fi
 if [ "$what" = push ] || [ "$what" = all ]; then
   echo "── 알림 검증 (로컬 DB·로컬 서버 기능·시험 수신 서버, 실제 휴대폰 아님)"
   node scripts/push-local-setup.mjs >/dev/null || status=1
   node --env-file=.env.development.local --env-file=.env.local scripts/push-check.mjs || status=1
-  sh scripts/cleanup-test-users.sh local
+  sh scripts/cleanup-test-users.sh local "$CHECK_RUN" || status=1
   echo "── 휴대폰 시험 빌드의 DB 보호 (운영 주소가 들어오면 빌드·터널 중단)"
   node scripts/phonetest-guard-check.mjs || status=1
 fi
 if [ "$what" = update ] || [ "$what" = all ]; then
   echo "── 새 버전 적용 검증 (실제 빌드를 번갈아 띄움)"
   node --env-file=.env.development.local --env-file=.env.local scripts/update-check.mjs || status=1
-  sh scripts/cleanup-test-users.sh local
+  sh scripts/cleanup-test-users.sh local "$CHECK_RUN" || status=1
 fi
 if [ "$what" = ocr ] || [ "$what" = all ]; then
   echo "── 인바디 글자 인식 검증 (가짜 결과지, 기기 안 인식·외부 전송 없음)"
@@ -48,5 +57,5 @@ if [ "$what" = e2e ] || [ "$what" = all ]; then
   echo "── 화면 흐름 검증 (로컬 개발 서버 + 로컬 DB)"
   node --env-file=.env.local scripts/e2e-flow.mjs || status=1
 fi
-sh scripts/cleanup-test-users.sh local
+sh scripts/cleanup-test-users.sh local "$CHECK_RUN" || status=1
 exit $status

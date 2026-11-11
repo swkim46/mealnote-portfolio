@@ -3,7 +3,10 @@
 //       입력 중이면 바뀌지 않고 띠가 뜨며, '지금 적용'을 누르면 바뀐다.
 import { chromium, devices } from 'playwright';
 import { execSync, spawn } from 'node:child_process';
-import { rmSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync, statSync, symlinkSync } from 'node:fs';
+import { createServer } from 'node:http';
+import { tmpdir } from 'node:os';
+import { extname, join, resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 
@@ -11,17 +14,25 @@ const require = createRequire(`${process.cwd()}/package.json`);
 const { createClient } = require('@supabase/supabase-js');
 const URL_ = process.env.VITE_SUPABASE_URL, KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY, CODE = process.env.TRAINER_CODE;
 if (!/^http:\/\/(127\.0\.0\.1|localhost):54321$/.test(URL_ ?? '')) throw new Error('로컬 DB 전용 검증입니다.');
-const OUT = 'dist-update-test', PORT = 5183, BASE = `http://localhost:${PORT}`;
+// 포트는 UPDATE_PORT로 바꿀 수 있다. 다른 앱의 개발 서버가 이 포트를 쓰고 있으면 미리 보기 서버가 뜨지 못하고
+// 검증이 그 앱 화면을 열어 엉뚱한 시간 초과가 난다(2026-11-01) — 시작 전에 포트가 비었는지 확인한다
+const OUT = 'dist-update-test', PORT = Number(process.env.UPDATE_PORT ?? 5183), BASE = `http://localhost:${PORT}`;
+{
+  const { createServer } = await import('node:net');
+  const free = await new Promise((resolve) => { const t = createServer().once('error', () => resolve(false)).once('listening', () => t.close(() => resolve(true))); t.listen(PORT); });
+  if (!free) { console.log(`FAIL  포트 ${PORT}을 다른 프로그램이 쓰고 있습니다. 그 서버를 끄거나 UPDATE_PORT=<빈 포트>로 다시 실행하세요.`); process.exit(1); }
+}
 let pass = 0, fail = 0;
 // 한 단계가 멈춰도 전체 검증(npm run check)이 끝없이 기다리지 않게: 5분 넘으면 마지막 단계를 알리고 실패로 끝낸다
 let step = '시작';
 const mark = (name) => { step = name; if (process.env.UPDATE_STEPS) console.log('STEP', name); };
-const watchdog = setTimeout(() => { console.log(`FAIL  시간 초과(5분) — 멈춘 단계: ${step}`); process.exit(1); }, 5 * 60 * 1000);
+const watchdog = setTimeout(() => { console.log(`FAIL  시간 초과(7분) — 멈춘 단계: ${step}`); process.exit(1); }, 7 * 60 * 1000);
 watchdog.unref();
 const check = (label, cond, extra = '') => { cond ? pass++ : fail++; console.log(`${cond ? 'PASS' : 'FAIL'}  ${label}${extra ? '  ' + extra : ''}`); };
 const build = () => execSync(`npx vite build --mode development --outDir ${OUT} --emptyOutDir`, { stdio: 'ignore' });
 const emailOf = (n) => createHash('sha256').update(n.normalize('NFC').trim().toLowerCase()).digest('hex').slice(0, 32) + '@users.mealnote.local';
-const run = Date.now().toString(36).slice(-4);
+// 실행 번호: check.sh가 주면 그것(정리를 이 실행 것만 하도록), 따로 돌리면 새로 만든다
+const run = process.env.CHECK_RUN || Date.now().toString(36).slice(-4);
 
 async function signup(n, role, trainerId) {
   const c = createClient(URL_, KEY, { auth: { persistSession: false } });
@@ -39,9 +50,20 @@ await signup(mn, 'member', tid);
 build();
 const server = spawn('npx', ['vite', 'preview', '--mode', 'development', '--outDir', OUT, '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
 const browser = await chromium.launch();
+// 2.0 시작 안내는 기기마다 처음 한 번 뜬다 — 안내를 시험하는 창 말고는 '이 기기에서 이미 봤음'으로 열어 다른 화면을 가리지 않게 한다
+const newCtx = async (opts) => { const c = await browser.newContext(opts); await c.addInitScript(() => { try { localStorage.setItem('mealnote:start-guide', '2.0'); localStorage.setItem('mealnote:setup-nudge', '9999-12-31'); localStorage.setItem('mealnote:whats-new', '2.3'); } catch { /* 저장소 없음 */ } }); return c; };
 try {
   await new Promise((r) => setTimeout(r, 2500));
-  const ctx = await browser.newContext({ ...devices['iPhone 13'] });
+  // 포트가 비었는지만으로는 부족하다 — localhost가 다른 주소 계열(IPv4·IPv6)의 다른 서버로 갈 수 있다(Codex v2.0.0 정식 3차 리뷰).
+  // 검증이 실제로 여는 주소가 방금 만든 빌드의 첫 화면(같은 index.html)을 돌려주는지 확인하고 시작한다
+  {
+    const { readFileSync } = await import('node:fs');
+    const built = readFileSync(`${OUT}/index.html`, 'utf8');
+    let served = '';
+    for (let i = 0; i < 20 && served !== built; i++) { served = await fetch(BASE).then((r) => r.text()).catch(() => ''); if (served !== built) await new Promise((r) => setTimeout(r, 500)); }
+    if (served !== built) { console.log(`FAIL  ${BASE}가 방금 만든 빌드를 돌려주지 않습니다(다른 서버가 응답하거나 미리 보기가 뜨지 않음). UPDATE_PORT=<빈 포트>로 다시 실행하세요.`); process.exit(1); }
+  }
+  const ctx = await newCtx({ ...devices['iPhone 13'] });
   const p = await ctx.newPage();
   const buildId = () => p.evaluate(() => document.documentElement.dataset.build);
   const resume = () => p.evaluate(() => document.dispatchEvent(new Event('visibilitychange'))); // 앱으로 돌아온 순간 흉내
@@ -50,8 +72,11 @@ try {
   await p.getByLabel('닉네임', { exact: true }).fill(mn);
   await p.getByLabel('PIN', { exact: true }).fill('135790');
   await p.getByRole('button', { name: '로그인', exact: true }).last().click();
-  await p.getByRole('heading', { name: '오늘의 식단' }).waitFor({ timeout: 15000 });
-  await p.locator('.app-header .text-size-toggle').click();
+  await p.getByRole('heading', { name: '식단', exact: true }).waitFor({ timeout: 15000 });
+  // 큰 글씨 켜기(2.0: 설정 탭에서) → 식단 탭으로 돌아온다
+  await p.locator('.bottom-nav .nav-item').filter({ hasText: /^설정/ }).click();
+  await p.getByRole('group', { name: '글씨 크기' }).getByRole('button', { name: '크게' }).click();
+  await p.locator('.bottom-nav .nav-item').filter({ hasText: /^식단/ }).click();
   await p.evaluate(() => navigator.serviceWorker.ready);
   const a = await buildId();
 
@@ -62,8 +87,8 @@ try {
   let b = a;
   for (let i = 0; i < 60 && (!b || b === a); i++) { await p.waitForTimeout(250); b = await buildId().catch(() => undefined); } // 새로고침 중의 빈 값은 건너뛴다
   check('앱으로 돌아오면 입력 중이 아닐 때 새 버전으로 바뀜', !!b && b !== a, `${a} → ${b}`);
-  await p.getByRole('heading', { name: '오늘의 식단' }).waitFor({ timeout: 15000 }).catch(() => {});
-  check('바뀐 뒤에도 로그인 유지', (await p.getByRole('heading', { name: '오늘의 식단' }).count()) === 1);
+  await p.getByRole('heading', { name: '식단', exact: true }).waitFor({ timeout: 15000 }).catch(() => {});
+  check('바뀐 뒤에도 로그인 유지', (await p.getByRole('heading', { name: '식단', exact: true }).count()) === 1);
   check('바뀐 뒤에도 큰 글씨 설정 유지', (await p.evaluate(() => document.documentElement.dataset.text)) === 'large');
   check('조용히 바뀔 때는 띠가 안 남음', (await p.locator('.update-banner').count()) === 0);
 
@@ -85,8 +110,8 @@ try {
   let c = b;
   for (let i = 0; i < 60 && (!c || c === b); i++) { await p.waitForTimeout(250); c = await buildId().catch(() => undefined); }
   check("'지금 적용'을 누르면 새 버전", !!c && c !== b, `${b} → ${c}`);
-  await p.getByRole('heading', { name: '오늘의 식단' }).waitFor({ timeout: 15000 }).catch(() => {});
-  check('적용 뒤에도 로그인 유지', (await p.getByRole('heading', { name: '오늘의 식단' }).count()) === 1);
+  await p.getByRole('heading', { name: '식단', exact: true }).waitFor({ timeout: 15000 }).catch(() => {});
+  check('적용 뒤에도 로그인 유지', (await p.getByRole('heading', { name: '식단', exact: true }).count()) === 1);
 
   mark('3 다음 복귀 때 적용');
   // 3) 띠를 누르지 않고 두면: 다음에 앱으로 돌아올 때 자동으로 바뀐다
@@ -106,7 +131,7 @@ try {
 
   mark('4a 로그인 칸');
   // 4) 시트 밖에서 쓰던 글(Codex 리뷰 v1.4 P2): 트레이너 한마디를 쓰다 커서를 옮겨도, 저장 전이면 바뀌지 않는다
-  const tctx = await browser.newContext({ ...devices['iPhone 13'] });
+  const tctx = await newCtx({ ...devices['iPhone 13'] });
   const t = await tctx.newPage();
   // 화면이 새로 고쳐지는 순간의 evaluate는 응답 없이 멈출 수 있다 → 3초 제한(Codex 재검토·자체 재현에서 이 단계가 멈춤)
   const timed = (pr) => Promise.race([pr, new Promise((_, rej) => setTimeout(() => rej(new Error('evaluate 3초 초과')), 3000))]);
@@ -136,13 +161,14 @@ try {
   }
   mark('4b 트레이너 로그인');
   await t.getByRole('button', { name: '로그인', exact: true }).last().click();
-  await t.getByRole('heading', { name: '확인할 식단' }).waitFor({ timeout: 15000 });
+  await t.getByRole('heading', { name: '확인', exact: true }).waitFor({ timeout: 15000 });
   mark('4c 서비스워커 준비');
   await t.evaluate(() => navigator.serviceWorker.ready);
   mark('4d 한마디 초안');
+  await t.locator('.bottom-nav .nav-item').filter({ hasText: /^커뮤니티/ }).click(); // 2.0: 한마디는 커뮤니티 탭
   await t.getByRole('button', { name: '한마디 쓰기' }).click();
   await t.locator('.today-word textarea').fill('아직 저장하지 않은 한마디');
-  await t.getByRole('heading', { name: '확인할 식단' }).click(); // 커서를 입력칸 밖으로
+  await t.getByRole('heading', { name: '커뮤니티', exact: true }).click(); // 커서를 입력칸 밖으로
   build();
   const t0 = await tBuild();
   await tResume();
@@ -172,7 +198,7 @@ try {
   // 5) 두 탭(Codex 재검토 v1.4 r3 P2): 같은 브라우저에서 입력 없는 탭이 새 버전을 적용해도, 입력 중인 다른 탭은 새로 고치지 않는다.
   //    서비스워커·새로고침은 실제 그대로 둔다(가로채지 않음). 미룬 탭은 '지금 적용'으로 최신 빌드가 열린다.
   mark('5 두 탭');
-  const two = await browser.newContext({ ...devices['iPhone 13'] });
+  const two = await newCtx({ ...devices['iPhone 13'] });
   const A = await two.newPage();
   const B = await two.newPage();
   const bounded = (pr, ms = 5000) => Promise.race([pr, new Promise((_, rej) => setTimeout(() => rej(new Error(`${ms / 1000}초 초과`)), ms))]);
@@ -206,6 +232,55 @@ try {
   for (let i = 0; i < 80 && (!aNew || aNew === aBefore); i++) { await new Promise((r) => setTimeout(r, 250)); aNew = await buildOf(A); }
   check("미룬 탭에서 '지금 적용'을 누르면 최신 빌드", !!aNew && aNew === bAfter, `${aBefore} → ${aNew} (B ${bAfter})`);
   await Promise.race([two.close(), new Promise((r) => setTimeout(r, 10000))]);
+
+  // 1.3 화면에서 넘어오기(v2.0.1 — Safari가 1.3.1에 머문 제보, Codex v2.0.1 1차 리뷰 후속): 실제 v1.3.1 소스를 지금 도구로 빌드해 두고,
+  // 같은 주소의 작은 서버가 그 빌드를 주다가 지금 빌드(OUT)로 바꿔 준다. 몇 번 새로 고치는 안에 FITORY가 뜨고 대기 중인 서비스워커가 남지 않아야 한다
+  // (public/sw-legacy.js가 1.3 저장본의 registerSW.js를 보고 바로 맡는다). 태그가 없는 사본에서는 건너뛴다
+  mark('1.3 화면 넘어오기');
+  let tagged = true;
+  try { execSync('git rev-parse -q --verify refs/tags/v1.3.1', { stdio: 'ignore' }); } catch { tagged = false; }
+  if (!tagged) console.log('SKIP  1.3 화면 넘어오기 — v1.3.1 태그가 없음');
+  else {
+    const tmp = mkdtempSync(join(tmpdir(), 'mealnote-v131-'));
+    const src = join(tmp, 'src'), old = join(tmp, 'b131');
+    let root = old;
+    const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.ico': 'image/x-icon', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json' };
+    const legacy = createServer((req, res) => {
+      let file = join(root, decodeURIComponent(new URL(req.url, 'http://x').pathname));
+      if (!existsSync(file) || statSync(file).isDirectory()) file = join(root, 'index.html');
+      res.writeHead(200, { 'content-type': types[extname(file)] ?? 'application/octet-stream', 'cache-control': 'public, max-age=0, must-revalidate' });
+      res.end(readFileSync(file));
+    });
+    try {
+      execSync(`git worktree add -q --detach "${src}" v1.3.1`, { stdio: 'ignore' });
+      symlinkSync(resolve('node_modules'), join(src, 'node_modules'));
+      for (const f of ['.env.local', '.env.development.local']) if (existsSync(f)) copyFileSync(f, join(src, f));
+      execSync(`npx vite build --mode development --outDir "${old}" --emptyOutDir`, { cwd: src, stdio: 'ignore' });
+      await new Promise((r) => legacy.listen(0, '127.0.0.1', r));
+      const LBASE = `http://127.0.0.1:${legacy.address().port}/`;
+      const lc = await browser.newContext();
+      const lp = await lc.newPage();
+      await lp.goto(LBASE);
+      await lp.evaluate(() => navigator.serviceWorker.ready);
+      if (!(await lp.evaluate(() => !!navigator.serviceWorker.controller))) await lp.reload();
+      await lp.waitForFunction(() => !!navigator.serviceWorker.controller, null, { timeout: 15000 });
+      const before = await lp.title();
+      root = resolve(OUT); // 배포
+      const titles = [];
+      for (let i = 0; i < 4 && titles.at(-1) !== 'FITORY'; i++) {
+        await lp.reload().catch(() => {});
+        await new Promise((r) => setTimeout(r, 3000));
+        titles.push(await lp.title());
+      }
+      const waiting = await lp.evaluate(async () => !!(await navigator.serviceWorker.getRegistration())?.waiting);
+      check('1.3.1 화면도 새로 고치면 2.0으로 넘어옴(대기 중인 서비스워커가 남지 않음)', before === '식단노트' && titles.at(-1) === 'FITORY' && !waiting, JSON.stringify({ before, titles, waiting }));
+      await lc.close();
+    } finally {
+      legacy.close();
+      try { execSync(`git worktree remove --force "${src}"`, { stdio: 'ignore' }); } catch { /* 이미 없음 */ }
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  }
 } finally {
   await browser.close();
   server.kill();

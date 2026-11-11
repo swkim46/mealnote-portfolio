@@ -9,7 +9,8 @@ export type PushSupport = 'ok' | 'install' | 'unsupported' | 'unconfigured';
 export type DeviceState = 'on' | 'off' | 'denied';
 
 const isIos = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const standalone = () => window.matchMedia?.('(display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone === true;
+/** 홈 화면에 추가한 앱으로 열었나 */
+export const standalone = () => window.matchMedia?.('(display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone === true;
 
 /** 이 화면에서 알림을 켤 수 있나. 브라우저 이름이 아니라 기능 지원과 설치 상태로 본다 */
 export function pushSupport(): PushSupport {
@@ -94,10 +95,12 @@ export interface PushPrefs {
   feedback: boolean;
   reminder: boolean;
   morning: boolean;
+  /** 주요 업데이트 알림(2.0 같은 큰 업데이트, 마이그레이션 20261030000005) */
+  updates: boolean;
 }
 /** 서버에 행이 없을 때의 값(서버 표의 기본값과 같다). 조회 실패를 이 값으로 바꾸지 않는다 */
-export const DEFAULT_PREFS: PushPrefs = { digest: true, digest_times: '3', feedback: true, reminder: true, morning: true };
-const PREFS_COLUMNS = 'digest, digest_times, feedback, reminder, morning';
+export const DEFAULT_PREFS: PushPrefs = { digest: true, digest_times: '3', feedback: true, reminder: true, morning: true, updates: true };
+const PREFS_COLUMNS = 'digest, digest_times, feedback, reminder, morning, updates';
 
 function parsePrefs(v: unknown): PushPrefs {
   const r = v as Partial<PushPrefs> | null;
@@ -107,11 +110,12 @@ function parsePrefs(v: unknown): PushPrefs {
     typeof r.feedback !== 'boolean' ||
     typeof r.reminder !== 'boolean' ||
     typeof r.morning !== 'boolean' ||
+    typeof r.updates !== 'boolean' ||
     (r.digest_times !== '3' && r.digest_times !== '5')
   ) {
     throw new Error('bad_prefs');
   }
-  return { digest: r.digest, digest_times: r.digest_times, feedback: r.feedback, reminder: r.reminder, morning: r.morning };
+  return { digest: r.digest, digest_times: r.digest_times, feedback: r.feedback, reminder: r.reminder, morning: r.morning, updates: r.updates };
 }
 
 /** 조회 실패는 던진다(기본값으로 바꾸지 않는다). 행이 없으면 기본값 */

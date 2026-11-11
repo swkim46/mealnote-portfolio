@@ -2,6 +2,7 @@
 // 식단 등록 때 남긴 말(note)을 대화의 첫 메시지로 다룬다(2026-10-21 사용자 피드백:
 // "등록할 때 남긴 질문이 작게 보여서 트레이너가 놓친다").
 import type { Comment, Meal } from './types';
+import { ratingOf } from './rating';
 
 export const NOTE_ID = 'note';
 
@@ -46,6 +47,13 @@ export const needsTrainer = (m: Meal) => !m.reviewed_at || hasQuestion(m);
 export const hasTrainerFeedback = (m: Meal) => !!lastTrainerComment(m) || !!m.rating;
 
 /** 회원이 아직 읽지 않은 트레이너 피드백(댓글·평가)이 있음 */
+/** 이 식사에서 회원에게 보여 준 가장 늦은 트레이너 피드백 시각(평가·답글), 없으면 null */
+export const latestFeedbackAt = (m: Meal): string | null => {
+  const c = lastTrainerComment(m);
+  const times = [c?.created_at, m.rated_at].filter((t): t is string => !!t);
+  return times.length ? times.reduce((a, b) => (Date.parse(a) >= Date.parse(b) ? a : b)) : null;
+};
+
 export const hasNewFeedback = (m: Meal) => {
   const c = lastTrainerComment(m);
   const seen = Date.parse(m.member_seen_at);
@@ -58,3 +66,18 @@ export function statusOf(m: Meal): { cls: string; label: string } {
   if (lastTrainerComment(m) || m.rating) return { cls: '', label: '피드백 완료' };
   return { cls: '', label: '확인 완료' };
 }
+
+/**
+ * 그날 트레이너 평가 색(2.1 식단 탭 날짜 띠 — 2026-11-03 사용자 확정 시안): '조절이 필요해요'가 하나라도 있으면 care,
+ * 아니면 '좋아요, 조금만 더'가 있으면 good, 아니면 '아주 좋아요'가 있으면 great, 평가 없이 기록만 있으면 wait, 기록이 없으면 ''
+ */
+export function dayTone(list: Meal[]): '' | 'great' | 'good' | 'care' | 'wait' {
+  if (!list.length) return '';
+  const cls = list.map((m) => ratingOf(m.rating)?.cls);
+  return cls.includes('care') ? 'care' : cls.includes('good') ? 'good' : cls.includes('great') ? 'great' : 'wait';
+}
+
+/** 추천 식단 공유 기간(2026-10-30 사용자 결정 — 서버 private.share_active와 같은 7일). 목록·사진 권한은 서버가 정하고, 화면은 버튼·안내에만 쓴다 */
+export const SHARE_DAYS = 7;
+export const shareEnds = (sharedAt: string) => new Date(Date.parse(sharedAt) + SHARE_DAYS * 86_400_000);
+export const shareActive = (sharedAt: string | null | undefined, now = Date.now()) => !!sharedAt && shareEnds(sharedAt).getTime() > now;

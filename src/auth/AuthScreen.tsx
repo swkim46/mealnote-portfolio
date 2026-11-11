@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Icon } from '../components/Icon';
 import { InstallHint } from '../components/AccountPanel';
 import { isValidPin, listTrainers, nicknameProblem, signIn, signUp, type Trainer } from '../lib/auth';
+import { Segmented } from '../ui/kit';
 import { getRemembered, onRememberedChange, setRemembered } from '../lib/remember';
 import { supabase } from '../lib/supabase';
 import { VersionLine } from '../components/ReleaseNotes';
@@ -12,6 +13,7 @@ import { answerProblem } from '../lib/recovery';
 import { markFreshLogin } from '../lib/pin';
 import { setUnsaved } from '../lib/appUpdate';
 import type { Role } from '../lib/types';
+import { APP_ICON, APP_NAME } from '../lib/brand';
 
 type Mode = 'login' | 'signup';
 
@@ -25,13 +27,11 @@ export function AuthScreen() {
   useEffect(() => () => setUnsaved('auth', false), []);
   return (
     <div className="workspace">
-      <section className="prototype" aria-label="식단노트 시작">
+      <section className="prototype" aria-label={`${APP_NAME} 시작`}>
         <div className="auth" onInput={() => setUnsaved('auth', true)}>
           <div className="auth-brand">
-            <span className="brand-icon" aria-hidden="true">
-              ▤
-            </span>
-            식단노트
+            <img className="brand-icon" src={APP_ICON} alt="" width={32} height={32} />
+            {APP_NAME}
             <div className="header-controls">
               <ThemeToggle />
               <TextSizeToggle />
@@ -55,7 +55,7 @@ function RolePicker({ onPick }: { onPick: (r: Role) => void }) {
       <h1>
         트레이너와 함께 쓰는
         <br />
-        식단 노트
+        식단·운동 기록
       </h1>
       <p className="lead">어떤 분으로 시작하시나요?</p>
       <div className="role-cards">
@@ -83,6 +83,8 @@ function RolePicker({ onPick }: { onPick: (r: Role) => void }) {
 
 function AuthForm({ role, initialNickname, onBack }: { role: Role; initialNickname: string; onBack: () => void }) {
   const [mode, setMode] = useState<Mode>('login');
+  const [gender, setGender] = useState<'' | 'male' | 'female'>('');
+  const [genderHidden, setGenderHidden] = useState(false);
   const [nickname, setNickname] = useState(initialNickname);
   // 자동 입력이 늦게 바뀌면 따라 바꾼다. 사람이 이미 고쳐 쓴 이름이나 가입 화면의 입력은 그대로 둔다
   const prefilled = useRef(initialNickname);
@@ -104,11 +106,15 @@ function AuthForm({ role, initialNickname, onBack }: { role: Role; initialNickna
   const [error, setError] = useState('');
   const isTrainer = role === 'trainer';
 
+  // 다시 불러오면 앞선 조회의 늦은 응답은 버린다(연속 기록과 같은 응답 순서 보호, Codex v2.0.1 4차 리뷰 같은 유형 점검)
+  const trainersReq = useRef(0);
   const loadTrainers = () => {
+    const n = ++trainersReq.current;
     setTrainers(null);
     listTrainers()
-      .then(setTrainers)
+      .then((list) => n === trainersReq.current && setTrainers(list))
       .catch(() => {
+        if (n !== trainersReq.current) return;
         setTrainers([]);
         setError('트레이너 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.');
       });
@@ -128,6 +134,7 @@ function AuthForm({ role, initialNickname, onBack }: { role: Role; initialNickna
       if (pin !== pin2) return setError('PIN 확인이 일치하지 않아요.');
       if (isTrainer && !code.trim()) return setError('트레이너 등록 코드를 입력해 주세요.');
       if (!isTrainer && !trainerId) return setError('담당 트레이너를 선택해 주세요.');
+      if (!isTrainer && !gender) return setError('성별을 선택해 주세요.');
       const ap = answerProblem(recAnswer);
       if (ap) return setError(`복구 질문: ${ap}`);
     }
@@ -139,7 +146,7 @@ function AuthForm({ role, initialNickname, onBack }: { role: Role; initialNickna
         ? await signIn(nickname, pin)
         : isTrainer
           ? await signUp({ role, nickname, pin, trainerCode: code, recoveryQuestion: recQuestion, recoveryAnswer: recAnswer })
-          : await signUp({ role, nickname, pin, trainerId, recoveryQuestion: recQuestion, recoveryAnswer: recAnswer });
+          : await signUp({ role, nickname, pin, trainerId, gender: gender as 'male' | 'female', genderHidden, recoveryQuestion: recQuestion, recoveryAnswer: recAnswer });
     setBusy(false);
     if (!message) {
       const userId = remember ? (await supabase.auth.getSession()).data.session?.user.id : undefined;
@@ -246,6 +253,31 @@ function AuthForm({ role, initialNickname, onBack }: { role: Role; initialNickna
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* 성별(2.3): 미리 골라 두지 않는다 — 고른 뒤에는 바꿀 수 없다. 안내는 논점만(사용자 11-05) */}
+        {mode === 'signup' && !isTrainer && (
+          <div className="field gender-field">
+            성별
+            <Segmented<'' | 'male' | 'female'>
+              label="성별"
+              value={gender}
+              onChange={setGender}
+              options={[
+                ['male', '남자'],
+                ['female', '여자'],
+              ]}
+            />
+            <span className="gender-notes">
+              <span>가입 후에는 앱에서 바꿀 수 없어요.</span>
+              <span>수정이 필요하면 가입 후 ‘의견 보내기’로 알려 주세요.</span>
+            </span>
+            <label className="gender-hide">
+              <input type="checkbox" checked={genderHidden} onChange={(e) => setGenderHidden(e.target.checked)} />
+              <b>성별 공개하지 않기</b>
+              <small>중량왕처럼 성별에 따라 나누는 기능에 참여하지 않아요.</small>
+            </label>
           </div>
         )}
 

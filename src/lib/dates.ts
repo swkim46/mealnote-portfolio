@@ -3,6 +3,12 @@ export const dateKey = (d: Date) =>
 
 export const todayKey = () => dateKey(new Date());
 
+/**
+ * 한국 날짜(YYYY-MM-DD) — 기기 시간대와 관계없이. 서버가 Asia/Seoul로 자르는 날짜와 맞출 때(루틴 판을 받은 날 등).
+ * 한국은 서머타임이 없어 UTC+9로 계산한다 — 날짜 모양이 브라우저의 지역 자료(Intl)에 따라 달라지지 않게(적대 검토)
+ */
+export const kstDateKey = (d: Date) => new Date(d.getTime() + 9 * 3_600_000).toISOString().slice(0, 10);
+
 export const shiftDay = (day: string, amount: number) => {
   const d = new Date(`${day}T12:00:00`);
   d.setDate(d.getDate() + amount);

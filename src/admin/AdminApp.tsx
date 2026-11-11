@@ -18,7 +18,11 @@ const EVENT_LABEL: Record<string, string> = {
   reclaimed: '로그인해 둔 기기로 계정을 되찾음',
   recovery_locked: 'PIN 찾기 답을 5번 틀려 하루 잠김',
   nickname_changed: '닉네임을 바꿈',
+  member_removed: '담당에서 내보내짐',
+  sheet_taken: '이미 다른 회원에게 연결된 운동 시트를 연결하려 함',
 };
+/** 기록에 함께 보이는 다른 사람(actor)의 역할 이름. 목록에 없는 새 종류라도 actor가 오면 이름은 보인다 */
+const ACTOR_LABEL: Record<string, string> = { member_removed: '트레이너', sheet_taken: '시도한 사람' };
 
 /** 운영자 화면: 익명으로 들어온 의견을 읽고 상태를 바꾼다. 식단·회원 기록은 볼 수 없다. */
 export function AdminApp({ profile }: { profile: Profile }) {
@@ -31,7 +35,7 @@ export function AdminApp({ profile }: { profile: Profile }) {
   const [pinOpen, setPinOpen] = useState(false);
   const [nicknameOpen, setNicknameOpen] = useState(false);
   const [recoveryOpen, setRecoveryOpen] = useState(false);
-  const [events, setEvents] = useState<{ nickname: string; kind: string; created_at: string }[]>([]);
+  const [events, setEvents] = useState<{ nickname: string; kind: string; created_at: string; actor: string | null }[]>([]);
 
   const load = useCallback(async () => {
     try {
@@ -115,7 +119,8 @@ export function AdminApp({ profile }: { profile: Profile }) {
             <h3>계정 보안 기록</h3>
             {events.slice(0, view === 'new' ? 5 : 100).map((e, i) => (
               <p key={i}>
-                <strong>{e.nickname}</strong> · {EVENT_LABEL[e.kind] ?? e.kind} · <span className="tiny">{relativeTime(e.created_at)}</span>
+                <strong>{e.nickname}</strong> · {EVENT_LABEL[e.kind] ?? e.kind}
+                {(e.kind in ACTOR_LABEL || e.actor) && ` (${ACTOR_LABEL[e.kind] ?? '관련된 사람'} ${e.actor ?? '알 수 없음'})`} · <span className="tiny">{relativeTime(e.created_at)}</span>
               </p>
             ))}
           </section>
@@ -163,7 +168,6 @@ export function AdminApp({ profile }: { profile: Profile }) {
     <>
       <Shell
         title={view === 'me' ? '내 정보' : '받은 의견'}
-        sub={view === 'me' ? '계정과 앱 설정을 확인해요.' : '익명으로 들어온 의견과 오류 제보예요.'}
         active={view}
         onTab={(id) => setView(id as View)}
         tabs={[

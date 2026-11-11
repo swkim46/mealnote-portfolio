@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from './lib/supabase';
 import { signOut } from './lib/auth';
+import { setRequestScope } from './lib/sharedRequest';
 import { syncRemembered } from './lib/remember';
 import { wasMyNickname } from './lib/pin';
 import { AuthScreen } from './auth/AuthScreen';
@@ -12,6 +13,7 @@ import { SecurityNotices } from './components/SecurityNotices';
 import { Loading } from './components/Bits';
 import type { Profile } from './lib/types';
 import { PROFILE_CHANGED } from './components/PinForms';
+import { clearMealPhotos } from './lib/mealPhoto';
 
 export default function App() {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
@@ -20,8 +22,15 @@ export default function App() {
   const userId = session?.user.id;
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data } = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
+    supabase.auth.getSession().then(({ data }) => {
+      setRequestScope(data.session?.user.id ?? '');
+      setSession(data.session);
+    });
+    // 로그인·로그아웃마다 함께 받던 요청을 버린다 — 그리기 전에(자식 화면의 조회가 부모의 효과보다 먼저 돈다). 토큰 갱신은 같은 로그인이다
+    const { data } = supabase.auth.onAuthStateChange((event, s) => {
+      if (event !== 'TOKEN_REFRESHED' && event !== 'USER_UPDATED') setRequestScope(s?.user.id ?? '');
+      setSession(s);
+    });
     return () => data.subscription.unsubscribe();
   }, []);
 
@@ -36,6 +45,7 @@ export default function App() {
   useEffect(() => {
     setProfile(null);
     setProfileError(false);
+    clearMealPhotos(); // 다른 계정이 받은 사진을 남기지 않는다
   }, [userId]);
 
   useEffect(() => {

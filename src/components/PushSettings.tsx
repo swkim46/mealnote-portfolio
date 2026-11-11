@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { InstallHint } from './AccountPanel';
 import { NotificationGuide } from './NotificationGuide';
 import { deviceState, disablePush, enablePush, fetchPrefs, pushSupport, savePrefs, type DeviceState, type EnableResult, type PushPrefs } from '../lib/push';
+import { savingSetup } from '../lib/setupNudge';
 import type { Profile } from '../lib/types';
+import { SETTINGS_APP_NAME } from '../lib/brand';
 
 const ENABLE_TEXT: Record<Exclude<EnableResult, 'ok'>, string> = {
-  denied: '알림이 허용되지 않았어요. 휴대폰 설정에서 식단노트 알림을 허용한 뒤 다시 눌러 주세요.',
+  denied: `알림이 허용되지 않았어요. 휴대폰 설정에서 ${SETTINGS_APP_NAME} 알림을 허용한 뒤 다시 눌러 주세요.`,
   subscribe_failed: '이 기기에서 알림을 등록하지 못했어요. 잠시 후 다시 시도해 주세요.',
   save_failed: '알림 설정을 저장하지 못했어요. 연결을 확인하고 다시 시도해 주세요.',
   bad_endpoint: '이 브라우저의 알림 서비스는 지원하지 않아요.',
@@ -16,7 +18,7 @@ const ENABLE_TEXT: Record<Exclude<EnableResult, 'ok'>, string> = {
 // 다른 항목까지 기본값으로 저장돼 다른 기기의 설정을 덮는다(Codex v1.7 품질 리뷰 1).
 type Loaded<T> = { status: 'loading' } | { status: 'error' } | { status: 'ready'; value: T };
 
-/** 내 정보 → 알림 설정: 이 기기 켜기·끄기(기기마다)와 알림 종류(계정 전체) */
+/** 설정 → 알림: 이 기기 켜기·끄기(기기마다)와 알림 종류(계정 전체) */
 export function PushSettings({ profile }: { profile: Profile }) {
   const support = pushSupport();
   const [device, setDevice] = useState<Loaded<DeviceState>>({ status: 'loading' });
@@ -68,7 +70,7 @@ export function PushSettings({ profile }: { profile: Profile }) {
     setError('');
     setMessage('');
     try {
-      const { result, tested } = await enablePush();
+      const { result, tested } = await savingSetup(enablePush);
       if (result === 'ok') {
         setDeviceNow('on');
         setMessage(tested ? '알림을 켰어요. 시험 알림을 보냈어요.' : '알림을 켰어요.');
@@ -159,7 +161,7 @@ export function PushSettings({ profile }: { profile: Profile }) {
             </button>
           </>
         ) : device.value === 'denied' ? (
-          <p className="hint">알림이 꺼져 있어요. 휴대폰 설정 → 알림에서 식단노트를 허용해 주세요.</p>
+          <p className="hint">알림이 꺼져 있어요. 휴대폰 설정 → 알림에서 {SETTINGS_APP_NAME}를 허용해 주세요.</p>
         ) : (
           <>
             <p className="push-state">이 기기는 알림을 받지 않아요.</p>
@@ -211,10 +213,11 @@ export function PushSettings({ profile }: { profile: Profile }) {
             </label>
             <label className="remember-row">
               <input type="checkbox" checked={shown!.reminder} disabled={saving} onChange={(e) => void change({ reminder: e.target.checked })} />
-              <span>식단 기록 알림(낮 1시 점심 · 저녁 8시 저녁, 기록이 없을 때만)</span>
+              <span>식단 기록 알림(낮 1시 점심 · 저녁 8시 저녁 · 트레이너가 보낸 알림, 기록이 없을 때만)</span>
             </label>
           </>
         )}
+        {/* 큰 업데이트 알림은 고르는 줄이 없다 — 운영자가 정해 보낸다(2026-11-02 사용자 결정, 서버도 이 설정을 보지 않음) */}
         {prefsError && <p className="field-error">{prefsError}</p>}
       </section>
       <p className="hint push-note">알림은 휴대폰 설정이나 집중 모드에 따라 늦거나 보이지 않을 수 있어요. 앱 안의 표시는 그대로 남아요.</p>

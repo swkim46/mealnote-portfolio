@@ -6,22 +6,25 @@ import { prettyDay, todayKey } from './dates';
 
 export interface ActivityItem {
   key: string;
-  kind: 'rated' | 'replied' | 'recorded' | 'recorded_note' | 'question' | 'note_edited';
+  kind: 'rated' | 'replied' | 'recorded' | 'recorded_note' | 'question' | 'note_edited' | 'liked';
   at: string;
-  meal_id: string;
+  /** 'liked'(한마디 좋아요)는 식사와 무관해 null. eaten_on은 그 한마디의 날짜 */
+  meal_id: string | null;
   eaten_on: string;
-  meal_type: string;
+  meal_type: string | null;
   actor: string;
+  /** 알림 목록 밖에서 이미 확인했나(회원: 그 식사의 피드백을 읽음 · 트레이너: 확인 처리했거나 답함) */
+  handled: boolean;
 }
 
-const KINDS = ['rated', 'replied', 'recorded', 'recorded_note', 'question', 'note_edited'];
+const KINDS = ['rated', 'replied', 'recorded', 'recorded_note', 'question', 'note_edited', 'liked'];
 const PAGE = 50;
 
 function parseItems(v: unknown): ActivityItem[] {
   if (!Array.isArray(v)) throw new Error('bad_activity');
   return v.map((r) => {
     const a = r as Partial<ActivityItem>;
-    if (typeof a.key !== 'string' || !KINDS.includes(a.kind as string) || typeof a.at !== 'string' || typeof a.meal_id !== 'string')
+    if (typeof a.key !== 'string' || !KINDS.includes(a.kind as string) || typeof a.at !== 'string' || (a.kind === 'liked' ? a.meal_id !== null : typeof a.meal_id !== 'string') || typeof a.handled !== 'boolean')
       throw new Error('bad_activity');
     return a as ActivityItem;
   });
@@ -44,6 +47,8 @@ export function activityText(a: ActivityItem) {
       return `${a.actor} 회원이 ${meal} 기록에 말을 남겼어요`;
     case 'note_edited':
       return `${a.actor} 회원이 ${meal} 기록의 한마디를 고쳤어요`;
+    case 'liked':
+      return `${a.actor} 회원이 ${dayLabel(a.eaten_on)} 한마디에 좋아요를 눌렀어요`;
   }
 }
 
@@ -154,22 +159,26 @@ export function useActivity(userId: string) {
     };
   }, [reload]);
 
-  const isNew = useCallback((a: ActivityItem) => seen !== 'unknown' && (!seen.at || Date.parse(a.at) > Date.parse(seen.at)), [seen]);
+  // 새 소식 = 목록을 연 뒤에 생겼고, 알림 목록 밖(피드백 탭·확인 목록)에서도 아직 확인하지 않은 소식
+  const isNew = useCallback((a: ActivityItem) => seen !== 'unknown' && !a.handled && (!seen.at || Date.parse(a.at) > Date.parse(seen.at)), [seen]);
   const unread = items && seen !== 'unknown' ? items.filter(isNew).length : 0;
+  // 읽음 시각 뒤에 생긴 소식인가(handled와 무관). 아직 안 불러온 뒤쪽 구간이 남았는지 판단하는 데만 쓴다 —
+  // handled는 소식마다 섞여 있어 시간 경계가 되지 못한다(Codex v1.8.0 리뷰 5)
+  const afterSeen = useCallback((a: ActivityItem) => seen !== 'unknown' && (!seen.at || Date.parse(a.at) > Date.parse(seen.at)), [seen]);
 
   /**
-   * 화면에 보여 준 소식까지만 읽음으로 옮긴다. 결과: saved(저장함) · skipped(옮길 것이 없거나 아직 안 보여 준 새 소식이 남음) · failed(저장 실패). 아직 안 불러온 뒤쪽에 새 소식이 남아 있으면(보여 준 가장 오래된 소식도 새 소식이고 뒤쪽이 더 있음) 옮기지 않는다.
+   * 화면에 보여 준 소식까지만 읽음으로 옮긴다. 결과: saved(저장함) · skipped(옮길 것이 없거나 아직 안 보여 준 새 소식이 남음) · failed(저장 실패). 아직 안 불러온 뒤쪽에 읽음 시각 뒤의 소식이 남아 있을 수 있으면(보여 준 가장 오래된 소식도 읽음 시각 뒤이고 뒤쪽이 더 있음) 옮기지 않는다.
    * 성공한 목록이 있을 때만 부른다. 서버는 이 시각보다 앞으로 가지 않는다.
    */
   const markSeen = useCallback(async (): Promise<'saved' | 'skipped' | 'failed'> => {
     if (!items?.length || seen === 'unknown') return 'skipped';
     const oldest = items[items.length - 1];
-    if (hasMore && isNew(oldest)) return 'skipped';
+    if (hasMore && afterSeen(oldest)) return 'skipped';
     const { error } = await supabase.rpc('mark_activity_seen', { p_through: items[0].at });
     if (error) return 'failed'; // 저장 실패는 호출한 쪽이 다시 시도할 계기를 정한다
     await reload();
     return 'saved';
-  }, [items, seen, hasMore, isNew, reload]);
+  }, [items, seen, hasMore, afterSeen, reload]);
 
   return {
     items,

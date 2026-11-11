@@ -1,4 +1,4 @@
-// 화면 테마(라이트 = 오렌지·블랙, 다크 = 라임·차콜). 기기(브라우저·설치 앱 저장소)마다 기억한다. 계정과는 무관.
+// 화면 테마(2.0부터 라이트·다크 모두 라임 대표색 — 바탕만 밝은 회백색·짙은 차콜). 기기(브라우저·설치 앱 저장소)마다 기억한다. 계정과는 무관.
 // <html data-theme="light|dark">로 CSS 변수를 바꾼다. 첫 화면은 index.html의 짧은 스크립트가 먼저 적용한다(깜빡임 방지).
 // 상단 버튼과 내 정보 설정이 같은 값을 보도록 작은 공용 저장소로 둔다. 다른 탭에서 바꾸면 storage 이벤트로 맞춘다.
 import { useCallback, useSyncExternalStore } from 'react';
@@ -6,7 +6,7 @@ import { useCallback, useSyncExternalStore } from 'react';
 export type Theme = 'light' | 'dark';
 export const THEME_KEY = 'mealnote:theme';
 /** 브라우저 상단·상태 표시줄 색(테마 바탕색) */
-const BAR_COLOR: Record<Theme, string> = { light: '#F5F5F5', dark: '#171B19' };
+const BAR_COLOR: Record<Theme, string> = { light: '#F7F6F3', dark: '#181613' }; // styles.css --bg와 같은 값(index.html·manifest도)
 const listeners = new Set<() => void>();
 
 /** 저장값 해석: 'dark'만 다크, 없거나 알 수 없는 값은 라이트 */

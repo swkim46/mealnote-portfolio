@@ -56,19 +56,20 @@ export default defineConfig(({ mode }) => (assertPhonetestLocal(mode), {
     // 새 버전 적용 시점은 앱이 정한다(src/lib/appUpdate.ts): 입력 중이 아닐 때 조용히, 입력 중이면 띠
     registerType: 'prompt',
     injectRegister: false,
-    includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'logo.svg'],
+    // app-icon.svg(v4 아이콘 PNG를 담은 1MB 파일)·logo.svg는 브라우저 탭 아이콘·소개용이라 설치 때 미리 받지 않는다(아래 globIgnores)
+    includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png'],
     manifest: {
-      name: '식단노트',
-      short_name: '식단노트',
-      description: '회원의 식단 기록과 트레이너 피드백을 잇는 앱',
+      name: 'FITORY', // 앱 이름은 src/lib/brand.ts(unit-check가 대조)
+      short_name: 'FITORY',
+      description: '트레이너와 함께 식단·운동을 기록하고 관리하는 앱',
       lang: 'ko',
       start_url: '/',
       scope: '/',
       display: 'standalone',
       orientation: 'portrait',
       // 설치 앱 시작 화면·기본 상단 색(라이트 기준). 실행 뒤에는 index.html·theme.ts가 테마에 맞춰 바꾼다
-      background_color: '#F5F5F5',
-      theme_color: '#F5F5F5',
+      background_color: '#F7F6F3',
+      theme_color: '#F7F6F3',
       icons: [
         { src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png' },
         { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
@@ -81,14 +82,15 @@ export default defineConfig(({ mode }) => (assertPhonetestLocal(mode), {
       globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
       // 인바디 글자 인식 파일(수 MB)은 미리 저장하지 않는다. '사진에서 읽기'를 누를 때만 받는다.
       // 알림 설정 그림 안내 이미지(약 1.3MB)도 안내를 열 때만 받는다
-      globIgnores: ['ocr/**', 'guides/**'],
+      globIgnores: ['ocr/**', 'guides/**', 'app-icon.svg', 'logo.svg'],
       navigateFallback: '/index.html',
       // 새 서비스워커가 열린 화면을 즉시 맡게(clientsClaim) 하지 않는다. 켜 두면 적용 순간 기존 화면의 새로고침 요청이
       // 끝나지 않고 걸리는 일이 있었다(새 버전 적용 검증에서 약 14번 중 3~4번, 끄고 6번 연속 통과). 처음 연 화면은
       // appUpdate.ts의 3초 뒤 직접 새로고침이 맡는다.
       clientsClaim: false,
       // 푸시 알림 받기·누르기(public/push-sw.js). 서비스워커 업데이트 흐름은 그대로 두고 이벤트만 더한다
-      importScripts: ['push-sw.js'],
+      // 1.3까지의 화면이 2.0으로 넘어오게(public/sw-legacy.js) — 그 시절 서비스워커가 맡은 경우에만 기다리지 않는다
+      importScripts: ['push-sw.js', 'sw-legacy.js'],
     },
   })],
   server: {

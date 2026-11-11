@@ -1,40 +1,34 @@
 // 알림 설정 그림 안내(2026-10-27): 알림 설정 창 안에서 열린다(창 위에 창을 띄우지 않음). 기종은 사용자가 고르고,
 // 기본 선택만 휴대폰 종류로 추정한다. 안내를 연다고 권한을 묻거나 설치를 판정하지 않는다 — 알림 받기는 사용자가 직접 누른다.
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { BACK_LEVEL, useBackLayer } from '../lib/backNav';
+import { useEffect, useRef, useState } from 'react';
+import { plain, rich } from './guideText';
+import { copyText } from '../lib/clipboard';
 import { GUIDE_HELP, GUIDE_INTRO, GUIDE_STEPS, guideImage, SERVICE_URL, type GuidePlatform } from '../lib/notificationGuide';
+import { APP_NAME } from '../lib/brand';
 
 const guessPlatform = (): GuidePlatform => (/Android/i.test(navigator.userAgent) ? 'android' : 'ios');
 
-/** 문구의 <b>…</b>만 굵은 글씨로 바꾼다(HTML로 넣지 않음) */
-function rich(text: string): ReactNode[] {
-  return text.split(/(<b>.*?<\/b>)/g).map((part, i) => (part.startsWith('<b>') ? <strong key={i}>{part.slice(3, -4)}</strong> : part));
-}
 
-const plain = (text: string) => text.replace(/<\/?b>/g, '');
-
-export function NotificationGuide({ onBack }: { onBack: () => void }) {
+export function NotificationGuide({ onBack, backLabel = '알림 설정으로 돌아가기' }: { onBack: () => void; backLabel?: string }) {
   const [platform, setPlatform] = useState<GuidePlatform>(guessPlatform);
   const [copied, setCopied] = useState<'' | 'ok' | 'fail'>('');
   const top = useRef<HTMLDivElement>(null);
+  useBackLayer(true, onBack, { level: BACK_LEVEL.inner, surface: () => [top.current?.closest<HTMLElement>('.sheet-body')] });
   // 창 본문을 맨 위로(scrollIntoView는 창의 고정 제목줄 아래로 첫 줄을 가린다)
   useEffect(() => {
     top.current?.closest('.sheet-body')?.scrollTo({ top: 0 });
   }, []);
 
   async function copy() {
-    try {
-      await navigator.clipboard.writeText(SERVICE_URL);
-      setCopied('ok');
-    } catch {
-      setCopied('fail');
-    }
+    setCopied((await copyText(SERVICE_URL)) ? 'ok' : 'fail');
   }
 
   const steps = GUIDE_STEPS[platform];
   return (
     <div className="notification-guide" ref={top}>
       <button type="button" className="text-button guide-back" onClick={onBack}>
-        ← 알림 설정으로 돌아가기
+        ← {backLabel}
       </button>
       <h3>휴대폰에서 새 소식 받기</h3>
       <div className="role-switch" role="group" aria-label="사용하는 휴대폰">
@@ -47,7 +41,7 @@ export function NotificationGuide({ onBack }: { onBack: () => void }) {
       <p className="hint">{GUIDE_INTRO[platform]}</p>
       <div className="guide-copy">
         <button type="button" className="secondary" onClick={() => void copy()}>
-          식단노트 주소 복사
+          {APP_NAME} 주소 복사
         </button>
         <span className="tiny" aria-live="polite">
           {copied === 'ok' ? '주소를 복사했어요.' : copied === 'fail' ? `복사하지 못했어요. ${SERVICE_URL} 을 직접 입력해 주세요.` : SERVICE_URL}

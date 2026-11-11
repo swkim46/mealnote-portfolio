@@ -88,10 +88,18 @@ export function ActivityList({ activity, onOpen }: { activity: ReturnType<typeof
       <ul className="activity-list">
         {items.map((a) => (
           <li key={a.key}>
-            <button type="button" className={`activity-item ${fresh?.has(a.key) ? 'new' : ''}`} onClick={() => onOpen(a.meal_id)}>
-              <span className="activity-text">{activityText(a)}</span>
-              <span className="tiny">{relativeTime(a.at)}</span>
-            </button>
+            {a.meal_id ? (
+              <button type="button" className={`activity-item ${fresh?.has(a.key) ? 'new' : ''}`} onClick={() => onOpen(a.meal_id!)}>
+                <span className="activity-text">{activityText(a)}</span>
+                <span className="tiny">{relativeTime(a.at)}</span>
+              </button>
+            ) : (
+              // 한마디 좋아요처럼 열 식사가 없는 소식
+              <div className={`activity-item ${fresh?.has(a.key) ? 'new' : ''}`}>
+                <span className="activity-text">{activityText(a)}</span>
+                <span className="tiny">{relativeTime(a.at)}</span>
+              </div>
+            )}
           </li>
         ))}
       </ul>

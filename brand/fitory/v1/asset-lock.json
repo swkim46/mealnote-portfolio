@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "brand": "FITORY",
+  "version": "v1",
+  "frozenOn": "2026-11-01",
+  "sourceSha256": "32168348504b5e522ca2e77494731aa84755b49c57858d39af29017b1ceda638",
+  "nativeSize": [
+    753,
+    753
+  ],
+  "nativePixelSha256": "02d665f59c86667716467355f94b776e9eb827b8b691f42483a5264350a327e5",
+  "formatNote": "Fixed JPEG pixels. SVG embeds the original JPEG and is not a true vector. 1024px is ordinary resampling, not recovered detail.",
+  "renderer": {
+    "pillow": "11.3.0",
+    "resampling": "LANCZOS",
+    "pngCompressLevel": 9,
+    "maskableContentScale": 0.86,
+    "maskableBackground": "#FFFFFF"
+  },
+  "files": {
+    "source/trainer-original.jpg": {
+      "sha256": "32168348504b5e522ca2e77494731aa84755b49c57858d39af29017b1ceda638",
+      "bytes": 65126
+    },
+    "master/icon.png": {
+      "sha256": "6dbab5f947c52abb69e25efaae297f5f240719b1ce578226107345dbb4ed9a7a",
+      "bytes": 250511
+    },
+    "master/icon.svg": {
+      "sha256": "dfbd271a68b0256863dd92bcf749eb61c4654daa24902c8e444e7362b95d34a2",
+      "bytes": 87117
+    },
+    "exports/apple-touch-icon-180x180.png": {
+      "sha256": "ec17b48ebd02af3749f63ebd76ad083042cd2628bdd8df90ff1bbeb466b5999c",
+      "bytes": 31113
+    },
+    "exports/favicon-16x16.png": {
+      "sha256": "99abc818e6d45de890dbec2c874e605bcb16c6733f340121d49a113173d66f6d",
+      "bytes": 703
+    },
+    "exports/favicon-32x32.png": {
+      "sha256": "18969351dee7de6ccc7a8f98321aa7ad9e5a5478272045445a8d45302f29985d",
+      "bytes": 2063
+    },
+    "exports/favicon-48x48.png": {
+      "sha256": "815ae1126c20934c4cddaf157a2f63204cb1ee3eb052f7ff4dd5586b2522fbb8",
+      "bytes": 4028
+    },
+    "exports/favicon.ico": {
+      "sha256": "2da3320fd5a75804d79c7b79ff7b30504a03ce6620ead7a52d731b83fef45e28",
+      "bytes": 6966
+    },
+    "exports/fitory-icon-1024.png": {
+      "sha256": "b0d067c454d677c4f3885647acb8520af26d31dec4fac2754177d927ab6c6abf",
+      "bytes": 421079
+    },
+    "exports/fitory-icon-128.png": {
+      "sha256": "9a6e4bcf784b9349078a4f3d39b2b6eb4d871bee2bd49f9d8bbb747970543f97",
+      "bytes": 18632
+    },
+    "exports/fitory-icon-256.png": {
+      "sha256": "ea66015cf47ef53beb217d1f7011dc4241accef312b9597ea3a2cbfbf22f7390",
+      "bytes": 54490
+    },
+    "exports/fitory-icon-384.png": {
+      "sha256": "19420d2b5f14f0b62aaa8a30ad7ae24b2f3ef79be1b668ac5bb22f5fa4e5cb38",
+      "bytes": 98736
+    },
+    "exports/fitory-icon-original.png": {
+      "sha256": "6dbab5f947c52abb69e25efaae297f5f240719b1ce578226107345dbb4ed9a7a",
+      "bytes": 250511
+    },
+    "exports/logo.svg": {
+      "sha256": "dfbd271a68b0256863dd92bcf749eb61c4654daa24902c8e444e7362b95d34a2",
+      "bytes": 87117
+    },
+    "exports/maskable-icon-192x192.png": {
+      "sha256": "523e12edd93df6b80bf4a407cf034aded2d20e3e21993e9d8def4f1b4df80f8b",
+      "bytes": 27913
+    },
+    "exports/maskable-icon-512x512.png": {
+      "sha256": "cdad3095916cb13e77694eb834b3408bff4aef08298e2be7d13925aef364c81a",
+      "bytes": 123973
+    },
+    "exports/pwa-192x192.png": {
+      "sha256": "4fcac4c84153fa0c114a510120e04fbbdeddb0a8aa941726a5702f9edee96057",
+      "bytes": 34355
+    },
+    "exports/pwa-512x512.png": {
+      "sha256": "5f71c135af4236fe4f3b462d7f3d14ae039bf5aa327062a497bdd22e2d0a4a01",
+      "bytes": 153874
+    },
+    "exports/pwa-64x64.png": {
+      "sha256": "d43c7534350e8623a7b11330e65c8e9b026f70b55946fbb9dc17bbdc5893c069",
+      "bytes": 6382
+    }
+  },
+  "public": {
+    "favicon.ico": "exports/favicon.ico",
+    "logo.svg": "exports/logo.svg",
+    "pwa-64x64.png": "exports/pwa-64x64.png",
+    "pwa-192x192.png": "exports/pwa-192x192.png",
+    "pwa-512x512.png": "exports/pwa-512x512.png",
+    "maskable-icon-512x512.png": "exports/maskable-icon-512x512.png",
+    "apple-touch-icon-180x180.png": "exports/apple-touch-icon-180x180.png"
+  }
+}

@@ -42,6 +42,9 @@ export function setUnsaved(key: string, on: boolean) {
   else unsaved.delete(key);
 }
 
+/** 뒤로 가기로 화면을 떠날 때: 저장하지 않은 입력이 있으면 묻는다 */
+export const mayLeaveScreen = () => !unsaved.size || window.confirm('쓰던 내용이 사라져요. 이 화면을 떠날까요?');
+
 /** 입력 중인가: 시트(식단 등록·댓글·PIN 등)가 열려 있거나, 입력칸에 커서가 있거나, 저장하지 않은 입력이 있다 */
 export function isBusy() {
   if (unsaved.size) return true;

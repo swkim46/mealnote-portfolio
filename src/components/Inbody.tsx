@@ -1,10 +1,12 @@
 import { useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useSheetDraft } from './Sheet';
 import { deleteInbody, InbodyDuplicateError, saveInbody } from '../lib/api';
 import { INBODY_PRIVACY, type InbodyState } from './useInbody';
 import { prettyDay, todayKey } from '../lib/dates';
 import type { InbodyInput, InbodyRecord } from '../lib/types';
 import { Empty, Loading } from './Bits';
 import { Icon } from './Icon';
+import { StaleNotice } from '../ui/kit';
 
 const fmt = (n: number | null, unit: string) => (n === null ? '–' : `${n.toFixed(1)}${unit}`);
 
@@ -44,34 +46,39 @@ export function InbodyPanel({
   canEdit,
   onAdd,
   onEdit,
+  pinned,
   children,
 }: {
   inbody: InbodyState;
   canEdit: boolean;
   onAdd?: () => void;
   onEdit?: (r: InbodyRecord) => void;
+  /** 인바디 조회와 상관없이 늘 보이는 내용(공복 체중·체중 그래프) */
+  pinned?: ReactNode;
   /** 결산 카드 등 목록 위에 붙일 내용 */
   children?: ReactNode;
 }) {
   const { records, loaded, failed } = inbody;
-  if (!loaded) return <Loading />;
-  if (failed)
-    return (
-      <Empty
-        title="인바디 기록을 불러오지 못했어요"
-        description="연결을 확인한 뒤 다시 시도해 주세요."
-        action={<button className="secondary" onClick={() => void inbody.reload()}>다시 불러오기</button>}
-      />
-    );
+  // 받아 둔 기록이 없을 때만 실패 화면. 있으면 기록과 '새로 받지 못함'을 함께(useInbody가 재조회 실패도 알린다)
+  const blocked = !loaded ? <Loading /> : failed && !records.length ? (
+    <Empty
+      title="인바디 기록을 불러오지 못했어요"
+      description="연결을 확인한 뒤 다시 시도해 주세요."
+      action={<button className="secondary" onClick={() => void inbody.reload()}>다시 불러오기</button>}
+    />
+  ) : null;
   const [latest, prev] = records;
+  // 공복 체중(pinned)은 인바디 조회와 따로 받는다. 실패·지연에도 남고, 트리 위치가 그대로라 쓰던 값도 지워지지 않는다(v2.3.0 2차 리뷰)
   return (
     <>
-      {canEdit && (
+      {blocked}
+      {!blocked && failed && <StaleNotice text="최신 인바디 기록을 불러오지 못했어요. 이전 기록을 보여 드려요." onRetry={() => void inbody.reload()} />}
+      {!blocked && canEdit && onAdd && (
         <button className="primary full inbody-add" onClick={onAdd}>
           <Icon name="plus" /> 인바디 기록하기
         </button>
       )}
-      {latest ? (
+      {blocked ? null : latest ? (
         <section className="inbody-latest" aria-label="최근 인바디">
           <div className="inbody-latest-head">
             <strong>최근 측정</strong>
@@ -100,8 +107,9 @@ export function InbodyPanel({
           description={canEdit ? '결과지 사진을 고르거나 숫자를 직접 넣어 기록해 보세요.' : '회원이 인바디를 기록하면 여기에 표시돼요.'}
         />
       )}
-      {children}
-      {records.length > 0 && (
+      {pinned}
+      {!blocked && children}
+      {!blocked && records.length > 0 && (
         <>
           <div className="section-title">
             <h3>
@@ -169,10 +177,16 @@ export function InbodyForm({
   const [readNote, setReadNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  // 결과지 사진에서 읽은 값은 칸을 거치지 않고 들어온다
+  const shape = [day, weight, smm, pbf].join('|');
+  const [startShape] = useState(shape);
+  // 사진을 읽지 못하면 네 칸이 모두 비는데, 그때는 잃을 내용이 없다
+  useSheetDraft(shape !== startShape && shape !== '|||', busy);
   const fileRef = useRef<HTMLInputElement>(null);
+  const camRef = useRef<HTMLInputElement>(null);
 
   async function readPhoto(file: File | undefined) {
-    if (fileRef.current) fileRef.current.value = ''; // 고른 사진을 입력 칸에서 바로 놓는다
+    for (const r of [fileRef, camRef]) if (r.current) r.current.value = ''; // 고른 사진을 입력 칸에서 바로 놓는다(찍기·앨범 둘 다)
     if (!file) return;
     // 새 사진의 결과로 네 칸을 모두 다시 채운다. 이전 사진·입력 값이 섞여 저장되지 않게 먼저 비운다(Codex 리뷰 v1.4 P2).
     setDay('');
@@ -237,22 +251,38 @@ export function InbodyForm({
 
   return (
     <form className="inbody-form" onSubmit={submit}>
+      <fieldset className="form-lock" disabled={busy}>
       {!initial && (
         <div className="inbody-photo">
           <p className="privacy-note" data-testid="inbody-privacy">
             {INBODY_PRIVACY}
           </p>
-          <label className={`secondary full photo-read ${reading ? 'busy' : ''}`}>
-            <Icon name="camera" /> {reading ?? '결과지 사진에서 읽기'}
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              aria-label="인바디 결과지 사진 선택"
-              disabled={!!reading}
-              onChange={(e) => void readPhoto(e.target.files?.[0])}
-            />
-          </label>
+          {/* 결과지 찍기와 앨범 고르기를 나눈다(안드로이드 크롬은 이미지 칸에 카메라를 보이지 않는다 — MealForm 설명) */}
+          <div className="photo-read-row">
+            <label className={`secondary photo-read ${reading ? 'busy' : ''}`}>
+              <Icon name="camera" /> {reading ?? '결과지 찍기'}
+              <input
+                ref={camRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                aria-label="인바디 결과지 사진 찍기"
+                disabled={!!reading}
+                onChange={(e) => void readPhoto(e.target.files?.[0])}
+              />
+            </label>
+            <label className={`secondary photo-read ${reading ? 'busy' : ''}`}>
+              <Icon name="photo" /> 앨범에서 고르기
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                aria-label="인바디 결과지 사진 선택"
+                disabled={!!reading}
+                onChange={(e) => void readPhoto(e.target.files?.[0])}
+              />
+            </label>
+          </div>
           {readNote && (
             <p className="read-note" role="status">
               {readNote}
@@ -302,6 +332,7 @@ export function InbodyForm({
           {confirmDelete ? '한 번 더 누르면 지워져요' : '이 기록 지우기'}
         </button>
       )}
+    </fieldset>
     </form>
   );
 }

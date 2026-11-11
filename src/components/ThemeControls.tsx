@@ -30,10 +30,10 @@ export function ThemeSetting() {
       <span>화면 테마</span>
       <div className="role-switch" role="group" aria-label="화면 테마">
         <button type="button" aria-pressed={theme === 'light'} onClick={() => change('light')}>
-          라이트 · 오렌지
+          라이트
         </button>
         <button type="button" aria-pressed={theme === 'dark'} onClick={() => change('dark')}>
-          다크 · 라임
+          다크
         </button>
       </div>
     </div>

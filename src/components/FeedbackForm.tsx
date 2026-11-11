@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Icon } from './Icon';
 import { CATEGORY_LABEL, deviceSummary, sendFeedback, type FeedbackCategory } from '../lib/feedback';
+import { APP_NAME } from '../lib/brand';
 
 const PLACEHOLDER: Record<FeedbackCategory, string> = {
   bug: '어떤 화면에서 무엇을 했을 때 어떻게 됐는지 적어 주시면 빨리 고칠 수 있어요.',
@@ -41,7 +42,7 @@ export function FeedbackForm({ screen, onDone }: { screen: string; onDone: () =>
         </span>
         <h3>보내 주셔서 고맙습니다</h3>
         <p>
-          작은 의견 하나도 식단노트를 고치는 데 정말 큰 힘이 돼요.
+          작은 의견 하나도 {APP_NAME}를 고치는 데 정말 큰 힘이 돼요.
           <br />
           남겨 주신 내용은 개발자가 직접 읽고 반영을 검토할게요.
         </p>
@@ -53,6 +54,7 @@ export function FeedbackForm({ screen, onDone }: { screen: string; onDone: () =>
 
   return (
     <form onSubmit={submit} className="app-feedback-form">
+      <fieldset className="form-lock" disabled={busy}>
       <p className="feedback-lead">
         불편한 점, 오류, 바라는 기능을 알려 주세요.
         <br />
@@ -96,6 +98,7 @@ export function FeedbackForm({ screen, onDone }: { screen: string; onDone: () =>
       <button className="primary full" type="submit" disabled={busy}>
         {busy ? '보내는 중…' : '의견 보내기'}
       </button>
+    </fieldset>
     </form>
   );
 }

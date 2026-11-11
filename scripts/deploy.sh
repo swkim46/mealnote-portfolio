@@ -1,6 +1,7 @@
 #!/bin/sh
 # 운영 배포. main 브랜치·저장 안 한 변경 없음·운영 DB 마이그레이션 최신일 때만 진행한다. 앱과 서버 기능을 같은 커밋으로 올린다.
 # 사용: npm run deploy   (배포 뒤 git tag v<버전> 을 붙인다)
+# 2.0부터 /beta/ 따로 빌드는 없다(1.8 때의 베타 배포 흐름은 main의 v1.8.x 기록에 남아 있다). 옛 /beta/ 주소는 public/_redirects가 첫 화면으로 보낸다
 cd "$(dirname "$0")/.." || exit 1
 
 branch=$(git rev-parse --abbrev-ref HEAD)
@@ -8,7 +9,12 @@ if [ "$branch" != "main" ]; then
   echo "배포 중단: 지금 브랜치는 '$branch'입니다. 운영 배포는 main에서만 합니다." >&2
   exit 1
 fi
-if [ -n "$(git status --porcelain)" ]; then
+# 상태 조회가 실패하면 빈 출력을 '변경 없음'으로 읽게 되므로 조회 성공부터 확인한다(Codex v1.8.3 2차 리뷰와 같은 유형)
+if ! dirty=$(git status --porcelain); then
+  echo "배포 중단: 작업 폴더 상태를 읽지 못했습니다." >&2
+  exit 1
+fi
+if [ -n "$dirty" ]; then
   echo "배포 중단: 커밋하지 않은 변경이 있습니다. 운영에 나가는 코드는 모두 커밋돼 있어야 합니다." >&2
   git status --short >&2
   exit 1
@@ -54,8 +60,21 @@ if [ "${version%.*}" != "$release" ]; then
   echo "  N이나 M을 올렸다면 RELEASES 맨 위에 v${version%.*} 소식을 추가하세요." >&2
   exit 1
 fi
+# 업데이트 소식 날짜 = 그 N.M을 처음 운영에 내는 날(2026-10-29 사용자 지적: 1.8을 계획한 날 10-28로 적고 10-29에 배포).
+# 처음 내는 N.M(태그 vN.M.0이 아직 없음)이면 소식 맨 위 날짜가 오늘(이 맥의 날짜)이어야 한다. 같은 N.M의 L 배포는 첫 배포 날짜를 그대로 둔다.
+release_date=$(sed -n "s/^ *date: '\([0-9-]*\)'.*/\1/p" src/lib/releases.ts | head -1)
+if ! git rev-parse -q --verify "refs/tags/v${release}.0" >/dev/null && [ "$release_date" != "$(date +%Y-%m-%d)" ]; then
+  echo "배포 중단: 처음 운영에 내는 v$release 의 업데이트 소식 날짜($release_date)가 오늘($(date +%Y-%m-%d))이 아닙니다." >&2
+  echo "  src/lib/releases.ts 맨 위 date를 오늘로 고친 뒤 다시 배포하세요." >&2
+  exit 1
+fi
 # 버전은 운영 배포 기준: 마지막 운영 태그(vX.Y.Z, dev 태그 제외)의 바로 다음 번호만 허용한다(dev 중 실수로 1.5가 되는 것 방지)
-last=$(git tag -l 'v*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)
+# 태그 목록 조회가 실패하면 '이전 운영 버전 없음'으로 넘어가지 않게 먼저 따로 받는다(main v1.8.3 deploy.sh에서 옮김, Codex v1.8.3 2차 리뷰)
+if ! all_tags=$(git tag -l 'v*'); then
+  echo "배포 중단: 버전 태그 목록을 읽지 못했습니다." >&2
+  exit 1
+fi
+last=$(printf '%s\n' "$all_tags" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)
 if [ -n "$last" ]; then
   allowed=$(echo "$last" | awk -F. '{printf "%d.%d.%d %d.%d.0 %d.0.0", $1,$2,$3+1, $1,$2+1, $1+1}')
   case " $allowed " in
@@ -65,6 +84,15 @@ if [ -n "$last" ]; then
 fi
 if git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
   echo "배포 중단: v$version 은 이미 배포한 번호입니다. 버그 수정이면 L, 새 기능이면 M을 올려 주세요." >&2
+  exit 1
+fi
+
+# 주요 업데이트 알림(2026-10-30 사용자 요청): 그 N.M을 처음 운영에 내면 배포 뒤 알림을 켠 기기마다 한 번 보낸다(scripts/release-push.mjs).
+# 앞자리(N)가 바뀌는 첫 배포(N.0.0)는 업데이트 소식에 push 문구가 있어야 한다 — 큰 업데이트 알림을 빠뜨리지 않게
+first_nm=0
+git rev-parse -q --verify "refs/tags/v${release}.0" >/dev/null || first_nm=1
+if [ "$first_nm" = 1 ] && [ "${version#*.}" = "0.0" ] && ! node scripts/release-push.mjs --check; then
+  echo "배포 중단: 앞자리가 바뀌는 v$version 의 업데이트 소식(src/lib/releases.ts 맨 위)에 push 문구(알림 제목·본문)가 없습니다." >&2
   exit 1
 fi
 
@@ -99,6 +127,10 @@ fi
 rm -f "$log"
 
 git tag -a "v$version" -m "운영 배포 v$version (앱·서버 기능 같은 커밋)"
+# 처음 내는 N.M이고 push 문구가 있으면 업데이트 알림(같은 버전은 DB가 한 번만 보낸다). 실패해도 앱은 이미 나갔으니 멈추지 않고 다시 보낼 명령을 알린다
+if [ "$first_nm" = 1 ] && node scripts/release-push.mjs --check; then
+  node scripts/release-push.mjs --linked || echo "주의: 업데이트 알림을 보내지 못했습니다. 확인 뒤 node scripts/release-push.mjs --linked 로 다시 보내세요(같은 버전은 한 번만 갑니다)." >&2
+fi
 echo "태그 v$version 을 붙였습니다." 
 
 # GitHub(비공개 운영 저장소)에 운영 코드와 태그를 올린다

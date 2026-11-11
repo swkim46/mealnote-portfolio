@@ -417,3 +417,15 @@ enabled = true
 # 푸시 알림 보내기: DB(pg_net)가 공유 비밀 머리글로 부른다. 사용자 JWT 검사는 하지 않는다(함수 안에서 비밀 확인).
 [functions.send-push]
 verify_jwt = false
+
+# 남의 식사 사진(담당 트레이너·추천 식단): 부른 사람의 로그인으로 DB 권한 함수를 불러 확인한다(함수 안에서 확인).
+[functions.meal-photo]
+verify_jwt = false
+
+# 루틴 시트 읽기: 부른 사람의 로그인으로 DB 권한 함수를 불러 확인한다(함수 안에서 확인).
+[functions.sheet-import]
+verify_jwt = false
+
+# 앱 기록을 시트에 쓰기(v2.1): 부른 사람의 로그인으로 그 기록을 읽어 확인한다(함수 안에서 확인).
+[functions.sheet-write]
+verify_jwt = false

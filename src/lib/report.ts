@@ -33,6 +33,17 @@ export const changeOf = (cur: InbodyRecord, prev: InbodyRecord): Change => ({
   pbf: diff(cur.pbf_pct, prev.pbf_pct),
 });
 
+/** 보고서 한 줄: '체중·체지방률이 내려가고 골격근량이 늘었어요'. 기록이 없는 값은 말하지 않는다 */
+export function bodySentence(c: Change) {
+  const rows: [string, number | null][] = [['체중', c.weight], ['골격근량', c.smm], ['체지방률', c.pbf]];
+  const down = rows.filter(([, v]) => v !== null && v < 0).map(([n]) => n).join('·');
+  const up = rows.filter(([, v]) => v !== null && v > 0).map(([n]) => n).join('·');
+  if (down && up) return `${down}이 내려가고 ${up}이 늘었어요`;
+  if (down) return `${down}이 내려갔어요`;
+  if (up) return `${up}이 늘었어요`;
+  return '체성분은 그대로예요';
+}
+
 /** 다음 날짜(YYYY-MM-DD) */
 export const dayAfter = (day: string) => {
   const d = new Date(`${day}T12:00:00`);

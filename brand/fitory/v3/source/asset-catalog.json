@@ -1,0 +1,61 @@
+{
+  "registeredOn": "2026-11-01",
+  "creatorNote": "Three artworks supplied by the user, made by the user's girlfriend. First image is the user-preferred primary. No generative editing or redraw in asset registration.",
+  "primary": "source/fitory-icon-primary-lime-dumbbell.png",
+  "files": [
+    {
+      "attachmentOrder": 1,
+      "role": "primary",
+      "originalFilename": "TalkMedia_i_6b4a52ad747b.png.png",
+      "path": "source/fitory-icon-primary-lime-dumbbell.png",
+      "sha256": "ba8c8a977f31ea284b170357fdd7e4990134a2e1ebbd78755f2b3b09f18582b6",
+      "bytes": 1483272,
+      "nativeSize": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        255,
+        255
+      ],
+      "metadataNote": "Original PNG bytes retained, including sRGB/gamma/dpi metadata. Rounded tile, surrounding white pixels and shadow are baked into the source and have not been removed."
+    },
+    {
+      "attachmentOrder": 2,
+      "role": "alternate-running",
+      "originalFilename": "KakaoTalk_Photo_2026-11-01-20-40-05.png",
+      "path": "alternates/fitory-icon-alt-running-cream.png",
+      "sha256": "cdedf91478fe2d9ae57590c56af573abb2d1df93d79f2347646cbb7424b458e5",
+      "bytes": 1513271,
+      "nativeSize": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        255,
+        255
+      ],
+      "metadataNote": "Original PNG bytes retained, including sRGB/gamma/dpi metadata. Rounded tile, surrounding white pixels and shadow are baked into the source and have not been removed."
+    },
+    {
+      "attachmentOrder": 3,
+      "role": "alternate-closeup",
+      "originalFilename": "KakaoTalk_Photo_2026-11-01-20-39-58.png",
+      "path": "alternates/fitory-icon-alt-dumbbell-closeup-lime.png",
+      "sha256": "18d0f6b0e2da554546de216cbdd3cdfba8bd94609e45336a4ae530bfcd23a06b",
+      "bytes": 1649660,
+      "nativeSize": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        255,
+        255
+      ],
+      "metadataNote": "Original PNG bytes retained, including sRGB/gamma/dpi metadata. Rounded tile, surrounding white pixels and shadow are baked into the source and have not been removed."
+    }
+  ]
+}

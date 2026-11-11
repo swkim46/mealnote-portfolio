@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 3,
+  "brand": "FITORY",
+  "version": "v3",
+  "frozenOn": "2026-11-01",
+  "sourceSha256": "ba8c8a977f31ea284b170357fdd7e4990134a2e1ebbd78755f2b3b09f18582b6",
+  "nativeSize": [
+    1254,
+    1254
+  ],
+  "primaryAsset": "source/fitory-icon-primary-lime-dumbbell.png",
+  "catalog": "source/asset-catalog.json",
+  "formatNote": "User-supplied PNG bytes unchanged. No generative editing, crop, recoloring, or redraw. SVG embeds source PNG; it is not a vector. All source alpha values are 255.",
+  "renderer": {
+    "pillow": "11.3.0",
+    "resampling": "LANCZOS",
+    "pngCompressLevel": 9,
+    "maskableContentScale": 1.0,
+    "maskableNote": "Same selected layout; outer artwork may be masked. Face, headband arrow and central dumbbell remain inside the safe circle.",
+    "essentialRegions": {
+      "face-features": [
+        540,
+        620,
+        900,
+        870
+      ],
+      "headband-arrow": [
+        760,
+        470,
+        940,
+        570
+      ],
+      "dumbbell-recognition": [
+        400,
+        790,
+        620,
+        1000
+      ]
+    }
+  },
+  "files": {
+    "source/asset-catalog.json": {
+      "sha256": "7b71c2a5e697e3d9273d6e677b9ac397e5e0f2fa46d007a6391323cfadc1ee14",
+      "bytes": 2222
+    },
+    "source/fitory-icon-primary-lime-dumbbell.png": {
+      "sha256": "ba8c8a977f31ea284b170357fdd7e4990134a2e1ebbd78755f2b3b09f18582b6",
+      "bytes": 1483272
+    },
+    "alternates/fitory-icon-alt-dumbbell-closeup-lime.png": {
+      "sha256": "18d0f6b0e2da554546de216cbdd3cdfba8bd94609e45336a4ae530bfcd23a06b",
+      "bytes": 1649660
+    },
+    "alternates/fitory-icon-alt-running-cream.png": {
+      "sha256": "cdedf91478fe2d9ae57590c56af573abb2d1df93d79f2347646cbb7424b458e5",
+      "bytes": 1513271
+    },
+    "master/icon.png": {
+      "sha256": "ba8c8a977f31ea284b170357fdd7e4990134a2e1ebbd78755f2b3b09f18582b6",
+      "bytes": 1483272
+    },
+    "master/icon.svg": {
+      "sha256": "93e6af6be9f0ec0a8ba077a93e9eb7f92eb535b1e2bb20b01b4fcdb73558dbcf",
+      "bytes": 1977859
+    },
+    "exports/app-icon.svg": {
+      "sha256": "93e6af6be9f0ec0a8ba077a93e9eb7f92eb535b1e2bb20b01b4fcdb73558dbcf",
+      "bytes": 1977859
+    },
+    "exports/apple-touch-icon-180x180.png": {
+      "sha256": "d4898bc90950c9532b0513c1701349a5320f55079047aadfabad62c762ae12fc",
+      "bytes": 38170
+    },
+    "exports/favicon-16x16.png": {
+      "sha256": "d7bc267d417b8e968f58d965274bb4ec15b04196cc2765c6b95210c7edb9328a",
+      "bytes": 826
+    },
+    "exports/favicon-32x32.png": {
+      "sha256": "20f8f126a61336e9ce8e365535ed30af66b33fed5ad832e831763eceffb577f9",
+      "bytes": 2510
+    },
+    "exports/favicon-48x48.png": {
+      "sha256": "7449167340999f3b004a1bfda7401eb98308bf9c1058b97741b6325de4a20312",
+      "bytes": 4743
+    },
+    "exports/favicon.ico": {
+      "sha256": "05cb7b056250d50d4dbc37b6738eaee3ca369597a841012247cbf377686e01ae",
+      "bytes": 8198
+    },
+    "exports/fitory-brand-logo.png": {
+      "sha256": "6dbab5f947c52abb69e25efaae297f5f240719b1ce578226107345dbb4ed9a7a",
+      "bytes": 250511
+    },
+    "exports/fitory-brand-logo.svg": {
+      "sha256": "dfbd271a68b0256863dd92bcf749eb61c4654daa24902c8e444e7362b95d34a2",
+      "bytes": 87117
+    },
+    "exports/fitory-icon-1024.png": {
+      "sha256": "14c39580f718943b3d84d83e377310766adb88c46ec8cab4a52b5fddb006f071",
+      "bytes": 762822
+    },
+    "exports/fitory-icon-128.png": {
+      "sha256": "8e861d27d8bb75aff53313919f99ebbca1b5cf38e8f7d2327ecbbf223b2b79ff",
+      "bytes": 21719
+    },
+    "exports/fitory-icon-256.png": {
+      "sha256": "c9e37f21b9fa7c07a49547ac607317d01bf9f8ae3e994fb62ddc16b6324d560a",
+      "bytes": 69699
+    },
+    "exports/fitory-icon-384.png": {
+      "sha256": "4801292a8f905b17b50ea0ff411329ee138e5cc82d261344dfcf2a94ed53cafa",
+      "bytes": 145345
+    },
+    "exports/fitory-icon-original.png": {
+      "sha256": "ba8c8a977f31ea284b170357fdd7e4990134a2e1ebbd78755f2b3b09f18582b6",
+      "bytes": 1483272
+    },
+    "exports/maskable-icon-192x192.png": {
+      "sha256": "a2c03d1dbe0ecf0ed58e90ed57d3bd00aaefa57f4293412d6a545adb546f5e7d",
+      "bytes": 42567
+    },
+    "exports/maskable-icon-512x512.png": {
+      "sha256": "d487864a5fda878fc87065e2a3f71ef3141426bad367cf0515d4f7e3ad0e64e0",
+      "bytes": 236818
+    },
+    "exports/pwa-192x192.png": {
+      "sha256": "a2c03d1dbe0ecf0ed58e90ed57d3bd00aaefa57f4293412d6a545adb546f5e7d",
+      "bytes": 42567
+    },
+    "exports/pwa-512x512.png": {
+      "sha256": "d487864a5fda878fc87065e2a3f71ef3141426bad367cf0515d4f7e3ad0e64e0",
+      "bytes": 236818
+    },
+    "exports/pwa-64x64.png": {
+      "sha256": "697aa9511387d24a786b5676a428aa214bc9ab825694fef3f599e5b6bdbec37a",
+      "bytes": 7443
+    }
+  },
+  "public": {
+    "favicon.ico": "exports/favicon.ico",
+    "app-icon.svg": "exports/app-icon.svg",
+    "logo.svg": "exports/fitory-brand-logo.svg",
+    "pwa-64x64.png": "exports/pwa-64x64.png",
+    "pwa-192x192.png": "exports/pwa-192x192.png",
+    "pwa-512x512.png": "exports/pwa-512x512.png",
+    "maskable-icon-512x512.png": "exports/maskable-icon-512x512.png",
+    "apple-touch-icon-180x180.png": "exports/apple-touch-icon-180x180.png"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "method": "Original JPEG pixel extraction and uniform resampling; no generative editing, redraw, recoloring or new body geometry.",
+  "sourceVersion": "v1",
+  "sourceFile": "source/trainer-original.jpg",
+  "selectionPolygon": [
+    [
+      100,
+      130
+    ],
+    [
+      623,
+      130
+    ],
+    [
+      623,
+      478
+    ],
+    [
+      487,
+      478
+    ],
+    [
+      461,
+      455
+    ],
+    [
+      150,
+      455
+    ],
+    [
+      100,
+      410
+    ]
+  ],
+  "darkThreshold": 235,
+  "colorThreshold": 32,
+  "alphaClosure": [
+    [
+      196,
+      439
+    ],
+    [
+      263,
+      446
+    ],
+    [
+      380,
+      447
+    ],
+    [
+      474,
+      450
+    ]
+  ],
+  "minimumComponentPixels": 50,
+  "edgeExpansionKernel": 3,
+  "sourceBounds": [
+    110,
+    138,
+    616,
+    476
+  ],
+  "background": "#FFFFFF",
+  "canvasSize": 1024,
+  "characterWidth": 860,
+  "note": "The mask closes the original unoutlined lower torso. No RGB outline or new anatomy is painted. The output is opaque on white, not a transparent or vector mascot."
+}

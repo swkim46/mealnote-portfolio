@@ -32,7 +32,7 @@ export async function listTrainers(): Promise<Trainer[]> {
 
 type SignUpInput = (
   | { role: 'trainer'; nickname: string; pin: string; trainerCode: string }
-  | { role: 'member'; nickname: string; pin: string; trainerId: string }
+  | { role: 'member'; nickname: string; pin: string; trainerId: string; gender: 'male' | 'female'; genderHidden: boolean }
 ) & { recoveryQuestion: number; recoveryAnswer: string };
 
 /**
@@ -65,7 +65,14 @@ export async function signUp(input: SignUpInput): Promise<string | null> {
     password: input.pin,
     options: { data: { nickname, signup_ticket: begin.data as string } },
   });
-  if (!error) return null;
+  if (!error) {
+    // 성별(2.3)은 가입 뒤 바로 저장한다. 한 번 더 시도하고, 그래도 안 되면 가입은 끝났으니 설정 → 계정에서 다시 고른다
+    if (input.role === 'member') {
+      const save = () => supabase.rpc('set_my_gender', { p_gender: input.gender, p_hidden: input.genderHidden });
+      if ((await save()).error) await save();
+    }
+    return null;
+  }
   if (error.status === 429) return '시도가 많아 잠시 막혔어요. 몇 분 뒤 다시 시도해 주세요.';
   if (/already registered/i.test(error.message)) return '이미 쓰고 있는 닉네임이에요. 다른 닉네임을 입력해 주세요.';
   return '가입하지 못했어요. 잠시 후 다시 시도해 주세요.';

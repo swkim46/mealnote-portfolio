@@ -19,7 +19,8 @@ const sql = (q) => {
   const out = execFileSync('supabase', ['db', 'query', '--local', q], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
   try { return JSON.parse(out).rows ?? []; } catch { return []; } // UPDATE·DELETE는 결과 행이 없다
 };
-const run = Date.now().toString(36).slice(-4);
+// 실행 번호: check.sh가 주면 그것(정리를 이 실행 것만 하도록), 따로 돌리면 새로 만든다
+const run = process.env.CHECK_RUN || Date.now().toString(36).slice(-4);
 let pass = 0, fail = 0;
 const check = (label, ok, extra = '') => { ok ? pass++ : fail++; console.log(`${ok ? 'PASS' : 'FAIL'}  ${label}${extra ? '  ' + extra : ''}`); };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -99,6 +100,11 @@ const later = (min) => new Date(Date.now() + min * 60e3);
 
 // 정기 호출(pg_cron)이 시험 중에 끼어들지 않게 잠시 멈춘다
 sql(`select cron.alter_job(jobid, active := false) from cron.job where jobname in ('mealnote-push', 'mealnote-push-pending')`);
+// DB 규칙 시험(1～7) 동안에는 서버 기능 호출이 실제 서버 기능에 닿지 않게 주소를 바꿔 둔다 — 정기 호출이 끼어들어 검증보다 먼저
+// 알림을 가져가 보내던 간헐 실패를 막는다. 호출 자체(pg_net 요청)는 그대로 생기므로 바로 보내기 검증은 할 수 있다. 8단계 직전에 되돌린다.
+const FN_URL = sql(`select decrypted_secret v from vault.decrypted_secrets where name = 'push_function_url'`)[0]?.v;
+const setFnUrl = (u) => sql(`select vault.update_secret((select id from vault.secrets where name = 'push_function_url'), '${u}')`);
+setFnUrl('http://127.0.0.1:9/push-check-disabled');
 const ids = [];
 try {
   const T = await signUp(`zz검증푸T${run}`, 'trainer', { code: CODE }); ids.push(T.id);
@@ -174,7 +180,7 @@ try {
   check('하루 3회 설정이면 12시 회차는 없음', jobsFor(jobs, T.id).length === 0);
   jobs = await claim(d15);
   const tj = jobsFor(jobs, T.id);
-  check('15시 요약: 확인할 기록 1건·답할 질문 1건', tj.length === 1 && tj[0].payload.body === '확인할 식사 기록 1건, 답할 질문 1건이 있어요' && tj[0].payload.open === 'queue', JSON.stringify(tj[0]?.payload));
+  check('15시 요약: 확인할 기록 1건·답할 질문 1건(제목 확인할 소식)', tj.length === 1 && tj[0].payload.title === '확인할 소식' && tj[0].payload.body === '확인할 식사 기록 1건, 답할 질문 1건이 있어요' && tj[0].payload.open === 'queue', JSON.stringify(tj[0]?.payload));
   check('알림 내용에 이름·식단 원문 없음', tj.length === 1 && !JSON.stringify(tj[0].payload).includes('zz검증') && !JSON.stringify(tj[0].payload).includes('샐러드') && !JSON.stringify(tj[0].payload).includes('단백질'));
   await report(tj, 'retry', { code: 503 });
   await T.c.rpc('mark_reviewed', { p_meal: m1a });
@@ -203,7 +209,7 @@ try {
   await T.c.rpc('rate_meal', { p_meal: f1, p_rating: 1 });
   jobs = await claim(later(0.2));
   let fj = jobsFor(jobs, M1.id).filter(isFb);
-  check('피드백은 기다리지 않고 바로 알림', fj.length === 1 && fj[0].payload.body === '트레이너가 피드백을 남겼어요' && fj[0].payload.open === 'feedback', JSON.stringify(fj.map((j) => j.payload)));
+  check('피드백은 기다리지 않고 바로 알림(제목 새 피드백)', fj.length === 1 && fj[0].payload.title === '새 피드백' && fj[0].payload.body === '트레이너가 피드백을 남겼어요' && fj[0].payload.open === 'feedback', JSON.stringify(fj.map((j) => j.payload)));
   await report(fj);
   const f2 = await meal(M1, { meal_type: '간식' });
   await T.c.from('comments').insert({ meal_id: f2, body: '좋아요' });
@@ -259,18 +265,21 @@ try {
   // 서버 기능 호출 수: pg_net 요청 번호(늘기만 함). 대기열·응답 기록의 행 수는 pg_net이 오래된 응답을 지우면서 줄 수 있어 쓰지 않는다
   // (DB를 새로 만든 직후 아직 한 번도 안 쓴 번호는 last_value가 1이라 is_called로 구분한다)
   const kickCount = () => Number(sql(`select (case when is_called then last_value else 0 end)::text n from net.http_request_queue_id_seq`)[0]?.n ?? 0);
-  const kst_ = () => sql(`select pending, (last_kick_at > now() - interval '10 seconds') as recent from private.push_kick_state`)[0];
+  // (DB 조회가 명령줄 도구라 한 번에 1～2초 걸린다. '10초 안' 판단은 실제 경과에 기대지 않고 마지막 호출 시각을 직접 정해 확인한다)
+  const kst_ = () => sql(`select pending, (last_kick_at > '-infinity'::timestamptz) as kicked from private.push_kick_state`)[0];
   sql(`update private.push_kick_state set last_kick_at = '-infinity', pending = false`);
   check('로그인 안 한 사람은 바로 보내기 요청 못 함', !!(await anon.rpc('push_nudge')).error);
   const k0 = kickCount();
   await M1.c.rpc('push_nudge');
-  check('회원의 바로 보내기 요청은 무시', JSON.stringify(kst_()) === JSON.stringify({ pending: false, recent: false }) && kickCount() === k0);
+  { const st_ = kst_(), k_ = kickCount(); check('회원의 바로 보내기 요청은 무시', st_?.pending === false && st_?.kicked === false && k_ === k0, JSON.stringify({ st_, k_, k0 })); }
   await T.c.rpc('push_nudge');
-  check('트레이너 바로 보내기: 서버 기능을 바로 부름', !!(await waitFor(() => kickCount() > k0, 10000)) && kst_()?.recent === true && kst_()?.pending === false);
+  check('트레이너 바로 보내기: 서버 기능을 바로 부름', !!(await waitFor(() => kickCount() > k0, 10000)) && kst_()?.kicked === true && kst_()?.pending === false);
   const k1 = kickCount();
+  sql(`update private.push_kick_state set last_kick_at = now()`); // 방금 불렀다고 정해 둔다
   await T.c.rpc('push_nudge');
   await sleep(1500);
   check('10초 안의 두 번째 요청은 버리지 않고 대기로 남김', kst_()?.pending === true && kickCount() === k1);
+  sql(`update private.push_kick_state set last_kick_at = now() - interval '5 seconds'`);
   sql(`select private.push_kick_pending()`);
   check('10초가 안 지났으면 대기 그대로', kst_()?.pending === true && kickCount() === k1);
   sql(`update private.push_kick_state set last_kick_at = now() - interval '11 seconds'`);
@@ -287,7 +296,7 @@ try {
   jobs = await claim(kst(tomorrow, 12, 55));
   check('13시 전에는 점심 알림 없음', remind(jobs, M1.id).length === 0);
   jobs = await claim(kst(tomorrow, 13, 5));
-  check('13시: 점심 기록 없는 회원에게 점심 알림', remind(jobs, M1.id).length === 1 && remind(jobs, M1.id)[0].payload.body === '점심 식단을 남겨 주세요');
+  check('13시: 점심 기록 없는 회원에게 점심 알림(제목 식단 기록)', remind(jobs, M1.id).length === 1 && remind(jobs, M1.id)[0].payload.title === '식단 기록' && remind(jobs, M1.id)[0].payload.body === '점심 식단을 남겨 주세요');
   check('13시: 점심 기록한 회원은 안 보냄', remind(jobs, M2.id).length === 0);
   await report(remind(jobs, M1.id), 'retry', { code: 500 });
   await meal(M1, { meal_type: '점심' });
@@ -328,6 +337,59 @@ try {
   check('11시가 지나 처음 돌면 그날 아침 응원은 보내지 않음', morning(await claim(kst(dayN, 11, 5)), M1.id).length === 0);
   check('트레이너는 아침 응원을 받지 않음', morning(await claim(kst(dayN, 9, 5)), T.id).length === 0);
 
+  // ─── 5c. 주요 업데이트 알림(2.0, 2026-10-30 사용자 요청): 배포 명령이 부르는 queue_release_push ───
+  resetState([T.id, M1.id, M2.id]);
+  const relVer = `9.${parseInt(run, 36) % 1000}`; // 시험마다 다른 버전(같은 버전은 한 번만 보내므로)
+  await M2.c.from('push_prefs').upsert({ user_id: M2.id, updates: false });
+  try {
+    const n1 = Number(sql(`select private.queue_release_push('${relVer}', '시험 업데이트', '시험 업데이트 본문') n`)[0]?.n);
+    check('업데이트 알림: 알림을 켠 회원·트레이너 계정마다 하나씩 만듦', n1 >= 3, String(n1));
+    jobs = await claim(later(1));
+    const rel = jobs.filter((j) => j.payload.tag === `release-${relVer}`);
+    check('업데이트 알림: 제목·본문 그대로, 누르면 첫 화면', rel.some((j) => j.payload.uid === M1.id && j.payload.title === '시험 업데이트' && j.payload.body === '시험 업데이트 본문' && j.payload.open === '') && rel.some((j) => j.payload.uid === T.id), JSON.stringify(rel.map((j) => j.payload)));
+    check("업데이트 알림: 끄는 설정이 없음 — 2.0.0 화면에서 '앱 업데이트 소식'을 꺼 둔 회원도 받음(2026-11-02 사용자 결정)", rel.some((j) => j.payload.uid === M2.id));
+    await report(jobs);
+    check('업데이트 알림: 같은 버전은 다시 불러도 한 번만', Number(sql(`select private.queue_release_push('${relVer}', '시험 업데이트', '다시') n`)[0]?.n) === 0);
+    check('업데이트 알림: 다시 불러도 새로 만든 알림 없음', jobsFor(await claim(later(2)), M1.id).filter((j) => j.payload.tag === `release-${relVer}`).length === 0);
+    check('업데이트 알림: 앱(회원·트레이너)은 보내기 함수를 못 부름', !!(await M1.c.rpc('queue_release_push', { p_version: '9.99', p_title: 'x', p_body: 'x' })).error && !!(await T.c.rpc('queue_release_push', { p_version: '9.99', p_title: 'x', p_body: 'x' })).error);
+    check('업데이트 알림: 버전 형식·문구 길이는 DB가 거부', (() => { try { sql(`select private.queue_release_push('2.0.0', 'x', 'x')`); return false; } catch { return true; } })());
+  } finally {
+    sql(`delete from private.release_pushes where version = '${relVer}'`);
+    await M2.c.from('push_prefs').upsert({ user_id: M2.id, updates: true });
+  }
+
+  // ─── 5d. 트레이너 '기록 알림 보내기'(2.1, 2026-11-03 사용자 확정 시안): 오늘 기록이 없는 담당 회원에게 하루 한 번 ───
+  resetState([T.id, M1.id, M2.id]);
+  {
+    const today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); // 한국 날짜
+    const nudge = (u, member) => u.c.rpc('nudge_member', { p_member: member });
+    const nudgeJobs = (list, uid) => jobsFor(list, uid).filter((j) => j.payload.tag === 'nudge');
+    await M1.c.from('meals').delete().eq('member_id', M1.id).eq('eaten_on', today);
+    await M2.c.from('meals').delete().eq('member_id', M2.id).eq('eaten_on', today);
+    const M3 = await signUp(`zz검증푸C${run}`, 'member', { trainer: T.id }); ids.push(M3.id);
+    check('기록 알림: 로그인 전·회원·담당이 아닌 트레이너는 못 보냄', !!(await anon.rpc('nudge_member', { p_member: M1.id })).error && !!(await nudge(M2, M1.id)).error && !!(await nudge(AD, M1.id)).error);
+    const r1 = await nudge(T, M1.id);
+    check('기록 알림: 오늘 기록 없는 담당 회원에게 보냄(sent)', r1.data === 'sent', JSON.stringify(r1.data ?? r1.error));
+    check('기록 알림: 같은 날 다시 누르면 already(하나만)', (await nudge(T, M1.id)).data === 'already' && Number(sql(`select count(*)::int n from private.push_notifications where user_id = '${M1.id}' and kind = 'nudge'`)[0]?.n) === 1);
+    check('기록 알림: 알림을 켠 기기가 없는 회원은 no_device', (await nudge(T, M3.id)).data === 'no_device');
+    check('기록 알림: 식단 기록 알림을 끈 회원은 muted', (await M2.c.from('push_prefs').upsert({ user_id: M2.id, reminder: false }), (await nudge(T, M2.id)).data === 'muted'));
+    await M2.c.from('push_prefs').upsert({ user_id: M2.id, reminder: true });
+    sql(`update public.app_settings set value = 'off' where key = 'push_mode'`);
+    check('기록 알림: 송신 스위치가 꺼져 있으면 off', (await nudge(T, M2.id)).data === 'off');
+    sql(`update public.app_settings set value = 'all' where key = 'push_mode'`);
+    check('기록 알림: 회원 2에게도 보냄', (await nudge(T, M2.id)).data === 'sent');
+    // 보내기 전에 회원 2가 오늘 식사를 남김 → 보낼 때 다시 확인해 취소 · 그 뒤 누르면 logged
+    await meal(M2, { eaten_on: today, meal_type: '아침' });
+    jobs = await claim(later(1));
+    const nj = nudgeJobs(jobs, M1.id);
+    check('기록 알림: 내용(제목 식단 기록·오늘 화면·이름 없음)', nj.length === 1 && nj[0].payload.title === '식단 기록' && nj[0].payload.body === '트레이너가 오늘 식단을 기다리고 있어요' && nj[0].payload.open === 'today' && !JSON.stringify(nj[0].payload).includes('zz검증'), JSON.stringify(nj[0]?.payload));
+    check('기록 알림: 보내기 전에 그날 식사를 남기면 보내지 않음', nudgeJobs(jobs, M2.id).length === 0);
+    check('기록 알림: 오늘 기록이 있으면 logged', (await nudge(T, M2.id)).data === 'logged');
+    await report(jobs);
+    const exp = sql(`select (expires_at = (('${today}'::date + 1)::timestamp at time zone 'Asia/Seoul')) ok from private.push_notifications where user_id = '${M1.id}' and kind = 'nudge'`)[0]?.ok;
+    check('기록 알림: 알림은 그날(한국 시각) 끝에 만료', exp === true || exp === 't', String(exp));
+  }
+
   // ─── 6. 동시 호출: 같은 시점 판정이 겹쳐도 알림 하나 ───
   resetState([T.id, M1.id, M2.id]);
   const day2 = new Date(Date.parse(tomorrow) + 86400e3).toISOString().slice(0, 10);
@@ -357,14 +419,17 @@ try {
     && sql(`select count(*)::int n from public.push_subscriptions where id = '${okJob.sid}'`)[0]?.n === 1);
 
   // ─── 8. 실제 서버 기능 경로: 시험 알림 → 암호 해독 · 계정 전환 · 로그아웃 ───
+  setFnUrl(FN_URL);
   resetState([T.id, M1.id, M2.id]);
   const pt = await M1.c.rpc('push_test');
   check('알림 켜기 직후 시험 알림 요청', pt.data?.status === 'ok', JSON.stringify(pt.data ?? pt.error));
   const got = await waitFor(() => dM1.inbox.find((x) => x.data?.tag === 'test'));
-  check('서버 기능이 보낸 시험 알림을 받아 암호를 풂', got?.data?.body?.startsWith('알림이 켜졌어요') && got?.data?.uid === M1.id && got?.ttl === '600' && got?.topic === 'test', JSON.stringify(got));
+  check('서버 기능이 보낸 시험 알림을 받아 암호를 풂(제목이 앱 이름과 겹치지 않음)', got?.data?.title === '알림이 켜졌어요' && got?.data?.body?.startsWith('새 소식이 있으면') && got?.data?.uid === M1.id && got?.ttl === '600' && got?.topic === 'test', JSON.stringify(got));
   check('VAPID 서명 머리글', /^vapid t=[\w-]+\.[\w-]+\.[\w-]+, k=[\w-]+$/.test(got?.auth ?? ''));
   // 아침 응원의 기본 문구는 서버 기능이 앱과 같은 목록·같은 날짜 규칙으로 채운다(실제 전송·암호 해독으로 확인)
   const today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+  // 한국 시각 9～11시에 돌리면 생성기가 이미 오늘 아침 응원을 만들어 같은 자리(회원·날짜)를 차지한다 → 그것을 지우고 시험한다(시간대에 따라 실패하던 검증)
+  sql(`delete from private.push_notifications where user_id = '${M1.id}' and kind = 'morning' and slot_key = '${today}'`);
   sql(`select private.push_add('${M1.id}', 'morning', '${today}', null, now(), now() + interval '2 hours')`);
   sql(`select private.push_kick()`);
   const gotM = await waitFor(() => dM1.inbox.find((x) => x.data?.tag === 'morning'));
@@ -403,6 +468,7 @@ try {
 } finally {
   sql(`update public.app_settings set value = 'all' where key = 'push_mode'`);
   sql(`update public.app_settings set value = '' where key = 'push_testers'`);
+  if (FN_URL) setFnUrl(FN_URL);
   sql(`select cron.alter_job(jobid, active := true) from cron.job where jobname in ('mealnote-push', 'mealnote-push-pending')`);
   if (ids.length) sql(`delete from auth.users where id in (${ids.map((x) => `'${x}'`).join(',')})`);
   receiver.close();

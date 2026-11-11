@@ -1,9 +1,11 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useMealPhoto, type PhotoRef } from '../lib/mealPhoto';
 import { Icon } from './Icon';
 import { prettyDay, todayKey } from '../lib/dates';
 import { hasQuestion, pendingQuestion, statusOf, thread } from '../lib/status';
 import type { Meal } from '../lib/types';
 import { RATINGS, ratingOf, type Rating } from '../lib/rating';
+import { SHEETS_ACCOUNT } from '../lib/api';
 
 export function RatingChip({ rating }: { rating: number | null }) {
   const r = ratingOf(rating);
@@ -42,8 +44,27 @@ export function StatusTag({ meal }: { meal: Meal }) {
   return <span className={`status ${cls}`}>{label}</span>;
 }
 
-export function MealImage({ url }: { url?: string }) {
-  return <span className="meal-image">{url ? <img src={url} alt="등록한 식사 사진" loading="lazy" /> : <Icon name="photo" />}</span>;
+/**
+ * 식사 사진 칸. url(본인 사진의 서명 주소)이 있으면 그대로, photo(남의 사진)면 화면에 들어올 때 서버 기능으로 받는다(src/lib/mealPhoto.ts).
+ */
+export function MealImage({ url, photo }: { url?: string; photo?: PhotoRef }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    if (!photo || seen) return;
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return setSeen(true);
+    const io = new IntersectionObserver((es) => es.some((e) => e.isIntersecting) && setSeen(true), { rootMargin: '200px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [photo, seen]);
+  const fetched = useMealPhoto(url ? undefined : photo, seen);
+  const src = url ?? fetched;
+  return (
+    <span className="meal-image" ref={ref}>
+      {src ? <img src={src} alt="등록한 식사 사진" loading="lazy" /> : <Icon name="photo" />}
+    </span>
+  );
 }
 
 /** 트레이너 카드에 붙는 한 줄: 답을 기다리는 질문이 있으면 질문, 없으면 회원 메모 */
@@ -64,6 +85,7 @@ function TrainerPreview({ meal }: { meal: Meal }) {
 export function MealCard({
   meal,
   photoUrl,
+  photo,
   showMember,
   forTrainer,
   onOpen,
@@ -71,13 +93,15 @@ export function MealCard({
 }: {
   meal: Meal;
   photoUrl?: string;
+  /** 남의 사진(트레이너): 서명 주소 대신 서버 기능으로 받는다 */
+  photo?: PhotoRef;
   showMember?: boolean;
   forTrainer?: boolean;
   onOpen: () => void;
   /** 있으면 카드 아래에 평가 버튼(트레이너 확인 목록) */
   onRate?: (r: Rating) => Promise<void>;
 }) {
-  const card = <MealCardButton meal={meal} photoUrl={photoUrl} showMember={showMember} forTrainer={forTrainer} onOpen={onOpen} />;
+  const card = <MealCardButton meal={meal} photoUrl={photoUrl} photo={photo} showMember={showMember} forTrainer={forTrainer} onOpen={onOpen} />;
   if (!onRate) return card;
   return (
     <div className="meal-card-wrap">
@@ -87,7 +111,7 @@ export function MealCard({
   );
 }
 
-function MealCardButton({ meal, photoUrl, showMember, forTrainer, onOpen }: { meal: Meal; photoUrl?: string; showMember?: boolean; forTrainer?: boolean; onOpen: () => void }) {
+function MealCardButton({ meal, photoUrl, photo, showMember, forTrainer, onOpen }: { meal: Meal; photoUrl?: string; photo?: PhotoRef; showMember?: boolean; forTrainer?: boolean; onOpen: () => void }) {
   const notToday = meal.eaten_on !== todayKey();
   return (
     <button
@@ -95,7 +119,7 @@ function MealCardButton({ meal, photoUrl, showMember, forTrainer, onOpen }: { me
       onClick={onOpen}
       aria-label={`${showMember ? meal.member_nickname + ' ' : ''}${meal.meal_type} ${meal.food} 상세 보기`}
     >
-      <MealImage url={photoUrl} />
+      <MealImage url={photoUrl} photo={photo} />
       <span className="meal-card-content">
         <span className="meal-meta">
           {showMember && <strong>{meal.member_nickname}</strong>}
@@ -127,6 +151,19 @@ export function Empty({ title, description, action }: { title: string; descripti
       <p>{description}</p>
       {action}
     </div>
+  );
+}
+
+/** 서비스 계정 주소. 좁은 화면에서 마지막 글자만 혼자 내려가지 않게 끊을 수 있는 곳을 더한다(복사되는 값은 그대로) */
+export function SheetsAccountCode() {
+  const [name, host] = SHEETS_ACCOUNT.split('@');
+  const [head, tail] = host.split('.iam.');
+  return (
+    <code className="sheet-account">
+      {name}@<wbr />
+      {head}.iam.<wbr />
+      {tail}
+    </code>
   );
 }
 
