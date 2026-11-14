@@ -4,6 +4,13 @@
 
 개인 카카오톡으로 식단 사진을 보내기 부담스러워하던 문제에서 출발했습니다. 저도 그런 회원 중 하나였고, 트레이너의 전용 앱 제안을 받아 제품 범위·사용 흐름·참여 정책·출시 시점을 정했습니다. Claude Code에 구현을, Codex에 계획과 코드 검토를 맡기고 두 역할의 화면을 직접 써 보며 개선했습니다.
 
+회원은 자신의 식단과 피드백을 보고, 트레이너는 여러 회원의 새 기록과 답변할 질문을 모아 봅니다. 아래 화면은 **공개 앱 코드에 가상의 이름·식단·운동·측정값을 넣어 촬영한 화면**입니다. 이미지를 누르면 원본을 크게 볼 수 있습니다.
+
+| 회원 · 오늘의 기록과 받은 피드백 | 트레이너 · 확인할 기록과 질문 |
+|---|---|
+| [<img src="docs/images/04_member_today.png" width="280" alt="회원 식단 화면의 날짜별 기록, 평가 상태와 받은 피드백">](docs/images/04_member_today.png) | [<img src="docs/images/01_trainer_queue.png" width="280" alt="트레이너 확인 화면의 새 운동 기록, 미확인 식사와 답변 대기">](docs/images/01_trainer_queue.png) |
+| 날짜별 식단과 평가를 확인하고 새 식사를 남깁니다. | 새 운동 기록과 식단을 확인하고, 질문이 있는 식사부터 살펴봅니다. |
+
 ## 1. 기존 시트에서 다음 코칭까지 이어지는 흐름
 
 ```mermaid
@@ -39,11 +46,12 @@ flowchart TB
 
 ### 기록이 코칭 자료가 되는 장면
 
-아래는 공개 앱 코드에 **가상의 이름·식단·운동·측정값**을 넣어 촬영한 화면입니다. 이미지를 누르면 크게 볼 수 있습니다.
+운동 중 남긴 수행 기록과 식단은 같은 측정 기간의 보고서에서 함께 확인합니다.
 
 | 계획을 보고 실제 수행 기록 | 같은 기간의 식단·운동·변화 |
 |---|---|
 | [<img src="docs/images/08_workout_input.png" width="280" alt="지난 수행과 운동별 메모를 보며 실제 중량과 완료 세트를 입력">](docs/images/08_workout_input.png) | [<img src="docs/images/12_change_report.png" width="280" alt="인바디 두 측정 사이의 기간 달력과 식단·운동 변화 보고서">](docs/images/12_change_report.png) |
+| 지난 중량과 트레이너 메모를 참고해 완료한 세트를 남깁니다. | 식단·운동을 기록한 날과 체성분 변화를 같은 기간으로 살펴봅니다. |
 
 [식단과 피드백 화면](docs/02_트레이너_업무_흐름과_처리_규칙.md) · [루틴·시트 연결·트레이너 총평 화면](docs/07_운동기록과_코칭보고서.md)
 
@@ -73,6 +81,11 @@ flowchart TB
 
 중량왕은 같은 트레이너의 회원 중 3대 운동의 5회 완료 세트를 성별·절대 중량·체중 대비로 나눠 비교합니다. 같은 종목의 절대 중량왕과 체중 대비왕을 겸하지 못하게 한 것은 제 결정입니다. 한 사람의 중량과 비율이 함께 보이면 체중을 역산할 수 있기 때문입니다. 식단 공유·닉네임·성별 공개는 따로 선택하고, 공개 식단에서는 개인 질문과 댓글을 제외합니다. [후보 조건·비교·공개 정책과 SQL](docs/08_참여_비교_공개정책.md)
 
+| 커뮤니티 · 현재 순위와 추천 식단 | 중량왕 · 비교 기준과 내 기록 |
+|---|---|
+| [<img src="docs/images/14_community.png" width="280" alt="커뮤니티의 현재 순위, 지난 수상과 추천 식단">](docs/images/14_community.png) | [<img src="docs/images/15_strength_ranking.png" width="280" alt="운동별 절대 중량과 체중 대비 수상 및 내 기록">](docs/images/15_strength_ranking.png) |
+| 순위 요약에서 상세로 들어가고, 공유된 추천 식단을 볼 수 있습니다. | 같은 동작에서도 절대 중량과 체중 대비를 나눠 보여줍니다. |
+
 ## 3. 기록과 피드백이 끊기지 않게 운영합니다
 
 **확인과 답변을 나눴습니다.** 식사와 함께 적은 질문은 대화 첫 메시지로 보여주고, 답변 대기를 위에 둡니다. ‘감사합니다’에는 답글 없이 확인만 할 수 있으며, 이후 새 메시지나 수정된 질문이 오면 다시 대기로 표시합니다. 식단 평가 문구의 세 가지 느낌과 5점 만점 기준은 제가 정했고 AI가 문구를 다듬었습니다. [상태·평가·화면 근거](docs/02_트레이너_업무_흐름과_처리_규칙.md)
@@ -82,6 +95,13 @@ flowchart TB
 **검토 의견으로 권한을 바꿨습니다.** Codex가 트레이너의 PIN 재설정 권한으로 회원 계정에 접근할 위험을 지적했습니다. 저는 연락처 없는 가입을 유지하면서 복구 질문과 기존 로그인 기기로 회원이 직접 계정을 되찾는 절차를 재기획했습니다. [가입·복구와 예외](docs/03_가입과_계정_보안.md)
 
 **입력과 기존 기록을 보호합니다.** 자동 업데이트, 운동 이력 조회, 계정 전환과 시트 반영이 작성 중인 내용이나 다른 사람의 기록을 지우지 않도록 검토합니다. 기능이 동작하는지와 화면·알림·보고서가 같은 규칙을 쓰는지를 함께 봅니다. [운영 기준](docs/05_출시_후_운영.md)
+
+앱 안에는 처음 사용하는 회원을 위한 사용 안내와 휴대폰별 알림 설정 안내도 마련했습니다.
+
+| 시작할 때 · 네 가지 메뉴 안내 | 사용 중 · 받을 알림과 기기 상태 |
+|---|---|
+| [<img src="docs/images/17_usage_guide.png" width="280" alt="FITORY 사용 안내의 식단·운동·커뮤니티·설정 설명">](docs/images/17_usage_guide.png) | [<img src="docs/images/05_member_push_settings.png" width="280" alt="휴대폰 알림 설정 방법, 이 기기의 상태와 받을 알림 선택">](docs/images/05_member_push_settings.png) |
+| 회원이 기록·피드백·운동·설정을 어디서 찾는지 안내합니다. | 이 기기의 알림 상태와 모든 기기에 적용할 수신 항목을 구분합니다. |
 
 ## 4. 제가 맡은 판단과 AI의 구현·검토
 
@@ -119,7 +139,7 @@ I defined the scope, product rules, priorities and release decisions. Claude Cod
 
 Reports run from the day after the previous body-composition measurement through the current measurement date. Missing records are not treated as non-adherence, and simultaneous changes are not automatically assigned a cause. Community features show remaining eligibility requirements, compare five-repetition sets under defined conditions, and offer separate meal, nickname and gender sharing choices. For each lift, the absolute-weight winner cannot also win the bodyweight-relative award, reducing direct bodyweight inference from displaying both values.
 
-Meal review and message acknowledgement are separate. Trainers receive grouped reminders; member feedback triggers a prompt delivery request alongside periodic checks. After Codex identified an account-access risk, I redesigned recovery so members could recover their own accounts without contact details.
+In-app guides introduce the main menus and explain phone notification setup. Meal review and message acknowledgement are separate. Trainers receive grouped reminders; member feedback triggers a prompt delivery request alongside periodic checks. After Codex identified an account-access risk, I redesigned recovery so members could recover their own accounts without contact details.
 
 <!-- usage-metrics-en:start -->
 Through November 13, 2026 (KST), the app had 47 registered members and 754 meal records. On that day, 13 members logged at least one meal. Test accounts are excluded; the charts update daily after the Korean day ends.
