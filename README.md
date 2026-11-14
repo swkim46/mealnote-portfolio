@@ -49,11 +49,11 @@ flowchart TB
 
 ## 2. 제품의 범위와 사용 방식을 정한 네 가지 판단
 
-### 실제 센터에서 시작할 수 있는 범위로 좁혔습니다
+### 직접 만들고 운영할 수 있는 범위로 기획했습니다
 
-첫 기획안은 회원 100명 규모의 외주 스토어 앱과 관리자 웹이었습니다. 저는 센터 한 곳에서 직접 만들고 운영할 조건에 맞춰 식사 기록과 피드백부터 출시하기로 했습니다. 칼로리 자동 분석·결제·별도 채팅방·센터 관리자 웹은 빼고, 링크로 접속해 홈 화면에 추가하는 PWA를 택했습니다.
+제가 다니는 센터에서 실제로 쓸 수 있도록, 직접 만들고 운영할 수 있는 범위로 기획했습니다. 회원의 식사 기록과 트레이너의 피드백을 먼저 연결하기로 했습니다. 칼로리 자동 분석·결제·별도 채팅방·센터 관리자 웹은 빼고, 링크로 접속해 홈 화면에 추가하는 PWA를 택했습니다.
 
-닉네임·6자리 PIN으로 가입하고 회원이 담당 트레이너를 고르게 했습니다. 이후 운동·인바디·커뮤니티로 확장할 때도 기록을 코칭에 쓰는 목적을 유지했습니다. 외주 예상 비용은 실제 절감액으로 계산하지 않았습니다. [초기안과 현재 범위](docs/01_문제와_범위_결정.md)
+닉네임·6자리 PIN으로 가입하고 회원이 담당 트레이너를 고르게 했습니다. 이후 운동·인바디·커뮤니티로 확장할 때도 기록을 코칭에 쓰는 목적을 유지했습니다. [범위와 선택 기준](docs/01_문제와_범위_결정.md)
 
 ### 트레이너의 시트 작성 방식과 회원의 실제 수행을 연결했습니다
 
@@ -115,7 +115,7 @@ flowchart TB
 
 FITORY is a mobile web app used at the personal-training studio I attend. It connects trainers' existing Google Sheets routines with members' actual workout and meal records, reports for the same body-composition measurement period, and a separate trainer assessment for the next coaching discussion. It began with members' reluctance to send meal photos through personal messaging.
 
-I defined the scope, product rules, priorities and release decisions. Claude Code implemented the app; Codex reviewed plans and code. I narrowed the initial outsourced store-app proposal to a PWA, preserved trainers' sheet workflow, and separated planned workouts from completed sets. Sheet sync respects manually edited values and keeps app records even when syncing fails. Exercise history and separate member/trainer notes are available during workouts and carry across routines.
+I defined the scope, product rules, priorities and release decisions. Claude Code implemented the app; Codex reviewed plans and code. I planned a PWA within the scope I could build and operate for my studio, starting with meal records and trainer feedback. As the app expanded, I preserved trainers' sheet workflow and separated planned workouts from completed sets. Sheet sync respects manually edited values and keeps app records even when syncing fails. Exercise history and separate member/trainer notes are available during workouts and carry across routines.
 
 Reports run from the day after the previous body-composition measurement through the current measurement date. Missing records are not treated as non-adherence, and simultaneous changes are not automatically assigned a cause. Community features show remaining eligibility requirements, compare five-repetition sets under defined conditions, and offer separate meal, nickname and gender sharing choices. For each lift, the absolute-weight winner cannot also win the bodyweight-relative award, reducing direct bodyweight inference from displaying both values.
 
