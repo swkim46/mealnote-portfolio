@@ -41,7 +41,7 @@ z
      <g id="line2d_1"/>
      <g id="text_1">
       <!-- 10/23 -->
-      <g style="fill: #666666" transform="translate(39.783489 266.512313) scale(0.1 -0.1)">
+      <g style="fill: #666666" transform="translate(39.737031 266.512313) scale(0.1 -0.1)">
        <defs>
         <path id="NanumGothic-31" d="M 2362,-211
 Q 2362,-301,2272,-301
@@ -180,13 +180,13 @@ z
     <g id="xtick_2">
      <g id="line2d_2"/>
      <g id="text_2">
-      <!-- 11/02 -->
-      <g style="fill: #666666" transform="translate(115.045458 266.512313) scale(0.1 -0.1)">
+      <!-- 11/03 -->
+      <g style="fill: #666666" transform="translate(119.970006 266.512313) scale(0.1 -0.1)">
        <use xlink:href="#NanumGothic-31"/>
        <use xlink:href="#NanumGothic-31" transform="translate(60.599991 0)"/>
        <use xlink:href="#NanumGothic-2f" transform="translate(121.199982 0)"/>
        <use xlink:href="#NanumGothic-30" transform="translate(158.699966 0)"/>
-       <use xlink:href="#NanumGothic-32" transform="translate(219.299957 0)"/>
+       <use xlink:href="#NanumGothic-33" transform="translate(219.299957 0)"/>
       </g>
      </g>
     </g>
@@ -194,7 +194,7 @@ z
      <g id="line2d_3"/>
      <g id="text_3">
       <!-- 11/13 -->
-      <g style="fill: #666666" transform="translate(197.833623 266.512313) scale(0.1 -0.1)">
+      <g style="fill: #666666" transform="translate(192.909074 266.512313) scale(0.1 -0.1)">
        <use xlink:href="#NanumGothic-31"/>
        <use xlink:href="#NanumGothic-31" transform="translate(60.599991 0)"/>
        <use xlink:href="#NanumGothic-2f" transform="translate(121.199982 0)"/>
@@ -206,57 +206,8 @@ z
     <g id="xtick_4">
      <g id="line2d_4"/>
      <g id="text_4">
-      <!-- 11/23 -->
-      <g style="fill: #666666" transform="translate(273.095591 266.512313) scale(0.1 -0.1)">
-       <use xlink:href="#NanumGothic-31"/>
-       <use xlink:href="#NanumGothic-31" transform="translate(60.599991 0)"/>
-       <use xlink:href="#NanumGothic-2f" transform="translate(121.199982 0)"/>
-       <use xlink:href="#NanumGothic-32" transform="translate(158.699966 0)"/>
-       <use xlink:href="#NanumGothic-33" transform="translate(219.299957 0)"/>
-      </g>
-     </g>
-    </g>
-   </g>
-   <g id="matplotlib.axis_2">
-    <g id="ytick_1">
-     <g id="line2d_5">
-      <path d="M 52.272,250.992
-L 288.594581,250.992
-" clip-path="url(#p78dacd2abf)" style="fill: none; stroke: #e5e7eb; stroke-width: 0.7; stroke-linecap: square"/>
-     </g>
-     <g id="line2d_6"/>
-     <g id="text_5">
-      <!-- 0 -->
-      <g style="fill: #666666" transform="translate(38.212625 254.752156) scale(0.1 -0.1)">
-       <use xlink:href="#NanumGothic-30"/>
-      </g>
-     </g>
-    </g>
-    <g id="ytick_2">
-     <g id="line2d_7">
-      <path d="M 52.272,199.737763
-L 288.594581,199.737763
-" clip-path="url(#p78dacd2abf)" style="fill: none; stroke: #e5e7eb; stroke-width: 0.7; stroke-linecap: square"/>
-     </g>
-     <g id="line2d_8"/>
-     <g id="text_6">
-      <!-- 20 -->
-      <g style="fill: #666666" transform="translate(32.15325 203.497919) scale(0.1 -0.1)">
-       <use xlink:href="#NanumGothic-32"/>
-       <use xlink:href="#NanumGothic-30" transform="translate(60.599991 0)"/>
-      </g>
-     </g>
-    </g>
-    <g id="ytick_3">
-     <g id="line2d_9">
-      <path d="M 52.272,148.483525
-L 288.594581,148.483525
-" clip-path="url(#p78dacd2abf)" style="fill: none; stroke: #e5e7eb; stroke-width: 0.7; stroke-linecap: square"/>
-     </g>
-     <g id="line2d_10"/>
-     <g id="text_7">
-      <!-- 40 -->
-      <g style="fill: #666666" transform="translate(32.15325 152.243682) scale(0.1 -0.1)">
+      <!-- 11/24 -->
+      <g style="fill: #666666" transform="translate(273.142049 266.512313) scale(0.1 -0.1)">
        <defs>
         <path id="NanumGothic-34" d="M 2509,1216
 L 2509,4070
@@ -291,6 +242,55 @@ L 2944,-211
 z
 " transform="scale(0.015625)"/>
        </defs>
+       <use xlink:href="#NanumGothic-31"/>
+       <use xlink:href="#NanumGothic-31" transform="translate(60.599991 0)"/>
+       <use xlink:href="#NanumGothic-2f" transform="translate(121.199982 0)"/>
+       <use xlink:href="#NanumGothic-32" transform="translate(158.699966 0)"/>
+       <use xlink:href="#NanumGothic-34" transform="translate(219.299957 0)"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_5">
+      <path d="M 52.272,250.992
+L 288.594581,250.992
+" clip-path="url(#p78dacd2abf)" style="fill: none; stroke: #e5e7eb; stroke-width: 0.7; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6"/>
+     <g id="text_5">
+      <!-- 0 -->
+      <g style="fill: #666666" transform="translate(38.212625 254.752156) scale(0.1 -0.1)">
+       <use xlink:href="#NanumGothic-30"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_7">
+      <path d="M 52.272,200.805559
+L 288.594581,200.805559
+" clip-path="url(#p78dacd2abf)" style="fill: none; stroke: #e5e7eb; stroke-width: 0.7; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8"/>
+     <g id="text_6">
+      <!-- 20 -->
+      <g style="fill: #666666" transform="translate(32.15325 204.565716) scale(0.1 -0.1)">
+       <use xlink:href="#NanumGothic-32"/>
+       <use xlink:href="#NanumGothic-30" transform="translate(60.599991 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_9">
+      <path d="M 52.272,150.619119
+L 288.594581,150.619119
+" clip-path="url(#p78dacd2abf)" style="fill: none; stroke: #e5e7eb; stroke-width: 0.7; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_10"/>
+     <g id="text_7">
+      <!-- 40 -->
+      <g style="fill: #666666" transform="translate(32.15325 154.379275) scale(0.1 -0.1)">
        <use xlink:href="#NanumGothic-34"/>
        <use xlink:href="#NanumGothic-30" transform="translate(60.599991 0)"/>
       </g>
@@ -741,7 +741,7 @@ z
     </g>
    </g>
    <g id="text_10">
-    <!-- 47명 -->
+    <!-- 48명 -->
     <g style="fill: #c55200" transform="translate(52.272 94.6512) scale(0.29 -0.29)">
      <defs>
       <path id="NanumGothicBold-34" d="M 3008,742
@@ -779,24 +779,71 @@ L 2323,3488
 L 947,1402
 z
 " transform="scale(0.015625)"/>
-      <path id="NanumGothicBold-37" d="M 1677,-256
-Q 1651,-307,1625,-326
-Q 1600,-346,1536,-346
-L 1018,-346
-Q 922,-346,896,-323
-Q 870,-301,896,-230
-L 2566,3859
-L 525,3859
-Q 480,3859,448,3888
-Q 416,3917,416,3968
-L 416,4416
-Q 416,4518,525,4518
-L 3251,4518
-Q 3360,4518,3382,4496
-Q 3405,4474,3405,4403
-L 3405,4013
-Q 3405,3962,3373,3910
-L 1677,-256
+      <path id="NanumGothicBold-38" d="M 1965,-397
+Q 1677,-397,1385,-310
+Q 1094,-224,864,-54
+Q 634,115,486,374
+Q 339,634,339,979
+Q 339,1216,419,1398
+Q 499,1581,630,1725
+Q 762,1869,938,1984
+Q 1114,2099,1306,2195
+Q 922,2413,698,2704
+Q 474,2995,474,3360
+Q 474,3629,592,3853
+Q 710,4077,912,4237
+Q 1114,4397,1386,4486
+Q 1658,4576,1965,4576
+Q 2285,4576,2557,4493
+Q 2829,4410,3024,4256
+Q 3219,4102,3331,3881
+Q 3443,3661,3443,3379
+Q 3443,3053,3241,2771
+Q 3040,2490,2624,2202
+Q 2848,2067,3027,1942
+Q 3206,1818,3334,1674
+Q 3462,1530,3529,1363
+Q 3597,1197,3597,979
+Q 3597,634,3459,374
+Q 3322,115,3094,-54
+Q 2867,-224,2572,-310
+Q 2278,-397,1965,-397
+z
+M 1965,3949
+Q 1830,3949,1696,3904
+Q 1562,3859,1453,3779
+Q 1344,3699,1273,3580
+Q 1203,3462,1203,3309
+Q 1203,3174,1292,3046
+Q 1382,2918,1507,2809
+Q 1632,2701,1760,2624
+Q 1888,2547,1971,2515
+Q 2067,2554,2195,2640
+Q 2323,2726,2441,2841
+Q 2560,2957,2640,3085
+Q 2720,3213,2720,3328
+Q 2720,3456,2659,3568
+Q 2598,3680,2496,3766
+Q 2394,3853,2256,3901
+Q 2118,3949,1965,3949
+z
+M 1971,1843
+Q 1843,1805,1683,1737
+Q 1523,1670,1385,1568
+Q 1248,1466,1152,1322
+Q 1056,1178,1056,979
+Q 1056,813,1139,678
+Q 1222,544,1353,448
+Q 1485,352,1648,301
+Q 1811,250,1965,250
+Q 2131,250,2294,298
+Q 2458,346,2586,442
+Q 2714,538,2794,672
+Q 2874,806,2874,979
+Q 2874,1101,2794,1232
+Q 2714,1363,2582,1478
+Q 2451,1594,2291,1690
+Q 2131,1786,1971,1843
 z
 " transform="scale(0.015625)"/>
       <path id="NanumGothicBold-ba85" d="M 3456,2266
@@ -880,43 +927,44 @@ z
 " transform="scale(0.015625)"/>
      </defs>
      <use xlink:href="#NanumGothicBold-34"/>
-     <use xlink:href="#NanumGothicBold-37" transform="translate(60.599991 0)"/>
+     <use xlink:href="#NanumGothicBold-38" transform="translate(60.599991 0)"/>
      <use xlink:href="#NanumGothicBold-ba85" transform="translate(121.199982 0)"/>
     </g>
    </g>
    <g id="line2d_11">
-    <path d="M 53.777239,248.429288
-L 61.303436,248.429288
-L 68.829633,248.429288
-L 76.35583,248.429288
-L 83.882027,202.300475
-L 91.408224,181.79878
-L 98.93442,168.98522
-L 106.460617,168.98522
-L 113.986814,168.98522
-L 121.513011,168.98522
-L 129.039208,156.171661
-L 136.565405,140.79539
-L 144.091601,135.669966
-L 151.617798,135.669966
-L 159.143995,133.107254
-L 166.670192,133.107254
-L 174.196389,133.107254
-L 181.722586,133.107254
-L 189.248782,133.107254
-L 196.774979,130.544542
-L 204.301176,130.544542
-L 211.827373,130.544542
-L 219.35357,130.544542
-L 226.879767,130.544542
-L 234.405963,130.544542
-L 241.93216,130.544542
-L 249.458357,130.544542
-L 256.984554,130.544542
-L 264.510751,130.544542
-L 272.036948,130.544542
-L 279.563144,130.544542
-L 287.089341,130.544542
+    <path d="M 53.730781,248.482678
+L 61.024688,248.482678
+L 68.318595,248.482678
+L 75.612502,248.482678
+L 82.906409,203.314881
+L 90.200315,183.240305
+L 97.494222,170.693695
+L 104.788129,170.693695
+L 112.082036,170.693695
+L 119.375943,170.693695
+L 126.669849,158.147085
+L 133.963756,143.091153
+L 141.257663,138.072508
+L 148.55157,138.072508
+L 155.845477,135.563186
+L 163.139384,135.563186
+L 170.43329,135.563186
+L 177.727197,135.563186
+L 185.021104,135.563186
+L 192.315011,133.053864
+L 199.608918,133.053864
+L 206.902824,133.053864
+L 214.196731,133.053864
+L 221.490638,133.053864
+L 228.784545,133.053864
+L 236.078452,133.053864
+L 243.372358,133.053864
+L 250.666265,133.053864
+L 257.960172,133.053864
+L 265.254079,133.053864
+L 272.547986,133.053864
+L 279.841892,133.053864
+L 287.135799,130.544542
 " clip-path="url(#p78dacd2abf)" style="fill: none; stroke: #c55200; stroke-width: 2.4; stroke-linecap: square"/>
    </g>
    <g id="PathCollection_1">
@@ -934,7 +982,7 @@ z
 " style="stroke: #c55200"/>
     </defs>
     <g clip-path="url(#p78dacd2abf)">
-     <use xlink:href="#m0599a4dbb6" x="287.089341" y="130.544542" style="fill: #c55200; stroke: #c55200"/>
+     <use xlink:href="#m0599a4dbb6" x="287.135799" y="130.544542" style="fill: #c55200; stroke: #c55200"/>
     </g>
    </g>
   </g>
@@ -952,7 +1000,7 @@ z
      <g id="line2d_12"/>
      <g id="text_11">
       <!-- 10/23 -->
-      <g style="fill: #666666" transform="translate(361.182199 266.512313) scale(0.1 -0.1)">
+      <g style="fill: #666666" transform="translate(361.135741 266.512313) scale(0.1 -0.1)">
        <use xlink:href="#NanumGothic-31"/>
        <use xlink:href="#NanumGothic-30" transform="translate(60.599991 0)"/>
        <use xlink:href="#NanumGothic-2f" transform="translate(121.199982 0)"/>
@@ -964,13 +1012,13 @@ z
     <g id="xtick_6">
      <g id="line2d_13"/>
      <g id="text_12">
-      <!-- 11/02 -->
-      <g style="fill: #666666" transform="translate(436.444167 266.512313) scale(0.1 -0.1)">
+      <!-- 11/03 -->
+      <g style="fill: #666666" transform="translate(441.368716 266.512313) scale(0.1 -0.1)">
        <use xlink:href="#NanumGothic-31"/>
        <use xlink:href="#NanumGothic-31" transform="translate(60.599991 0)"/>
        <use xlink:href="#NanumGothic-2f" transform="translate(121.199982 0)"/>
        <use xlink:href="#NanumGothic-30" transform="translate(158.699966 0)"/>
-       <use xlink:href="#NanumGothic-32" transform="translate(219.299957 0)"/>
+       <use xlink:href="#NanumGothic-33" transform="translate(219.299957 0)"/>
       </g>
      </g>
     </g>
@@ -978,7 +1026,7 @@ z
      <g id="line2d_14"/>
      <g id="text_13">
       <!-- 11/13 -->
-      <g style="fill: #666666" transform="translate(519.232333 266.512313) scale(0.1 -0.1)">
+      <g style="fill: #666666" transform="translate(514.307784 266.512313) scale(0.1 -0.1)">
        <use xlink:href="#NanumGothic-31"/>
        <use xlink:href="#NanumGothic-31" transform="translate(60.599991 0)"/>
        <use xlink:href="#NanumGothic-2f" transform="translate(121.199982 0)"/>
@@ -990,13 +1038,13 @@ z
     <g id="xtick_8">
      <g id="line2d_15"/>
      <g id="text_14">
-      <!-- 11/23 -->
-      <g style="fill: #666666" transform="translate(594.494301 266.512313) scale(0.1 -0.1)">
+      <!-- 11/24 -->
+      <g style="fill: #666666" transform="translate(594.540759 266.512313) scale(0.1 -0.1)">
        <use xlink:href="#NanumGothic-31"/>
        <use xlink:href="#NanumGothic-31" transform="translate(60.599991 0)"/>
        <use xlink:href="#NanumGothic-2f" transform="translate(121.199982 0)"/>
        <use xlink:href="#NanumGothic-32" transform="translate(158.699966 0)"/>
-       <use xlink:href="#NanumGothic-33" transform="translate(219.299957 0)"/>
+       <use xlink:href="#NanumGothic-34" transform="translate(219.299957 0)"/>
       </g>
      </g>
     </g>
@@ -1983,7 +2031,7 @@ z
     </g>
    </g>
    <g id="text_20">
-    <!-- 11명 -->
+    <!-- 12명 -->
     <g style="fill: #2563eb" transform="translate(373.67071 94.6512) scale(0.29 -0.29)">
      <defs>
       <path id="NanumGothicBold-31" d="M 1830,-346
@@ -2006,45 +2054,82 @@ Q 2426,-346,2342,-346
 L 1830,-346
 z
 " transform="scale(0.015625)"/>
+      <path id="NanumGothicBold-32" d="M 486,-352
+Q 365,-352,365,-269
+L 365,96
+Q 365,147,393,198
+Q 422,250,461,301
+L 1434,1453
+Q 1965,2086,2221,2508
+Q 2477,2931,2477,3200
+Q 2477,3507,2288,3705
+Q 2099,3904,1824,3904
+Q 1562,3904,1315,3830
+Q 1069,3757,781,3590
+Q 730,3558,678,3561
+Q 627,3565,614,3622
+L 525,4109
+Q 512,4141,531,4173
+Q 550,4205,614,4243
+Q 858,4371,1171,4473
+Q 1485,4576,1786,4576
+Q 2093,4576,2352,4489
+Q 2611,4403,2800,4233
+Q 2989,4064,3097,3808
+Q 3206,3552,3206,3219
+Q 3206,2931,3078,2633
+Q 2950,2336,2758,2051
+Q 2566,1766,2348,1507
+Q 2131,1248,1952,1037
+Q 1811,864,1654,675
+Q 1498,486,1338,307
+L 3213,307
+Q 3302,307,3302,205
+L 3302,-243
+Q 3302,-352,3213,-352
+L 486,-352
+z
+" transform="scale(0.015625)"/>
      </defs>
      <use xlink:href="#NanumGothicBold-31"/>
-     <use xlink:href="#NanumGothicBold-31" transform="translate(60.599991 0)"/>
+     <use xlink:href="#NanumGothicBold-32" transform="translate(60.599991 0)"/>
      <use xlink:href="#NanumGothicBold-ba85" transform="translate(121.199982 0)"/>
     </g>
    </g>
    <g id="line2d_22">
-    <path d="M 375.175949,245.755154
-L 382.702146,250.992
-L 390.228343,250.992
-L 397.75454,245.755154
-L 405.280736,198.62354
-L 412.806933,156.728772
-L 420.33313,141.018234
-L 427.859327,177.676156
-L 435.385524,203.860386
-L 442.911721,203.860386
-L 450.437917,156.728772
-L 457.964114,130.544542
-L 465.490311,135.781388
-L 473.016508,146.25508
-L 480.542705,172.43931
-L 488.068902,198.62354
-L 495.595098,209.097232
-L 503.121295,198.62354
-L 510.647492,177.676156
-L 518.173689,167.202464
-L 525.699886,146.25508
-L 533.226083,182.913002
-L 540.752279,193.386694
-L 548.278476,214.334078
-L 555.804673,172.43931
-L 563.33087,172.43931
-L 570.857067,177.676156
-L 578.383264,172.43931
-L 585.90946,193.386694
-L 593.435657,214.334078
-L 600.961854,219.570924
-L 608.488051,193.386694
+    <path d="M 375.129491,245.755154
+L 382.423398,250.992
+L 389.717305,250.992
+L 397.011211,245.755154
+L 404.305118,198.62354
+L 411.599025,156.728772
+L 418.892932,141.018234
+L 426.186839,177.676156
+L 433.480746,203.860386
+L 440.774652,203.860386
+L 448.068559,156.728772
+L 455.362466,130.544542
+L 462.656373,135.781388
+L 469.95028,146.25508
+L 477.244186,172.43931
+L 484.538093,198.62354
+L 491.832,209.097232
+L 499.125907,198.62354
+L 506.419814,177.676156
+L 513.71372,167.202464
+L 521.007627,146.25508
+L 528.301534,182.913002
+L 535.595441,193.386694
+L 542.889348,214.334078
+L 550.183254,172.43931
+L 557.477161,172.43931
+L 564.771068,177.676156
+L 572.064975,172.43931
+L 579.358882,193.386694
+L 586.652789,214.334078
+L 593.946695,219.570924
+L 601.240602,193.386694
+L 608.534509,188.149848
 " clip-path="url(#pf96e4a462e)" style="fill: none; stroke: #2563eb; stroke-width: 2.4; stroke-linecap: square"/>
    </g>
    <g id="PathCollection_2">
@@ -2062,7 +2147,7 @@ z
 " style="stroke: #2563eb"/>
     </defs>
     <g clip-path="url(#pf96e4a462e)">
-     <use xlink:href="#me64ee02649" x="608.488051" y="193.386694" style="fill: #2563eb; stroke: #2563eb"/>
+     <use xlink:href="#me64ee02649" x="608.534509" y="188.149848" style="fill: #2563eb; stroke: #2563eb"/>
     </g>
    </g>
   </g>
@@ -2080,7 +2165,7 @@ z
      <g id="line2d_23"/>
      <g id="text_21">
       <!-- 10/23 -->
-      <g style="fill: #666666" transform="translate(682.580909 266.512313) scale(0.1 -0.1)">
+      <g style="fill: #666666" transform="translate(682.534451 266.512313) scale(0.1 -0.1)">
        <use xlink:href="#NanumGothic-31"/>
        <use xlink:href="#NanumGothic-30" transform="translate(60.599991 0)"/>
        <use xlink:href="#NanumGothic-2f" transform="translate(121.199982 0)"/>
@@ -2092,13 +2177,13 @@ z
     <g id="xtick_10">
      <g id="line2d_24"/>
      <g id="text_22">
-      <!-- 11/02 -->
-      <g style="fill: #666666" transform="translate(757.842877 266.512313) scale(0.1 -0.1)">
+      <!-- 11/03 -->
+      <g style="fill: #666666" transform="translate(762.767426 266.512313) scale(0.1 -0.1)">
        <use xlink:href="#NanumGothic-31"/>
        <use xlink:href="#NanumGothic-31" transform="translate(60.599991 0)"/>
        <use xlink:href="#NanumGothic-2f" transform="translate(121.199982 0)"/>
        <use xlink:href="#NanumGothic-30" transform="translate(158.699966 0)"/>
-       <use xlink:href="#NanumGothic-32" transform="translate(219.299957 0)"/>
+       <use xlink:href="#NanumGothic-33" transform="translate(219.299957 0)"/>
       </g>
      </g>
     </g>
@@ -2106,7 +2191,7 @@ z
      <g id="line2d_25"/>
      <g id="text_23">
       <!-- 11/13 -->
-      <g style="fill: #666666" transform="translate(840.631042 266.512313) scale(0.1 -0.1)">
+      <g style="fill: #666666" transform="translate(835.706494 266.512313) scale(0.1 -0.1)">
        <use xlink:href="#NanumGothic-31"/>
        <use xlink:href="#NanumGothic-31" transform="translate(60.599991 0)"/>
        <use xlink:href="#NanumGothic-2f" transform="translate(121.199982 0)"/>
@@ -2118,13 +2203,13 @@ z
     <g id="xtick_12">
      <g id="line2d_26"/>
      <g id="text_24">
-      <!-- 11/23 -->
-      <g style="fill: #666666" transform="translate(915.893011 266.512313) scale(0.1 -0.1)">
+      <!-- 11/24 -->
+      <g style="fill: #666666" transform="translate(915.939469 266.512313) scale(0.1 -0.1)">
        <use xlink:href="#NanumGothic-31"/>
        <use xlink:href="#NanumGothic-31" transform="translate(60.599991 0)"/>
        <use xlink:href="#NanumGothic-2f" transform="translate(121.199982 0)"/>
        <use xlink:href="#NanumGothic-32" transform="translate(158.699966 0)"/>
-       <use xlink:href="#NanumGothic-33" transform="translate(219.299957 0)"/>
+       <use xlink:href="#NanumGothic-34" transform="translate(219.299957 0)"/>
       </g>
      </g>
     </g>
@@ -2146,14 +2231,14 @@ L 931.392,250.992
     </g>
     <g id="ytick_8">
      <g id="line2d_29">
-      <path d="M 695.069419,194.708141
-L 931.392,194.708141
+      <path d="M 695.069419,196.441521
+L 931.392,196.441521
 " clip-path="url(#p7b760418f2)" style="fill: none; stroke: #e5e7eb; stroke-width: 0.7; stroke-linecap: square"/>
      </g>
      <g id="line2d_30"/>
      <g id="text_26">
       <!-- 500 -->
-      <g style="fill: #666666" transform="translate(668.891294 198.468298) scale(0.1 -0.1)">
+      <g style="fill: #666666" transform="translate(668.891294 200.201677) scale(0.1 -0.1)">
        <defs>
         <path id="NanumGothic-35" d="M 736,-205
 Q 646,-173,646,-90
@@ -2196,14 +2281,14 @@ z
     </g>
     <g id="ytick_9">
      <g id="line2d_31">
-      <path d="M 695.069419,138.424283
-L 931.392,138.424283
+      <path d="M 695.069419,141.891042
+L 931.392,141.891042
 " clip-path="url(#p7b760418f2)" style="fill: none; stroke: #e5e7eb; stroke-width: 0.7; stroke-linecap: square"/>
      </g>
      <g id="line2d_32"/>
      <g id="text_27">
       <!-- 1000 -->
-      <g style="fill: #666666" transform="translate(662.831919 142.184439) scale(0.1 -0.1)">
+      <g style="fill: #666666" transform="translate(662.831919 145.651198) scale(0.1 -0.1)">
        <use xlink:href="#NanumGothic-31"/>
        <use xlink:href="#NanumGothic-30" transform="translate(60.599991 0)"/>
        <use xlink:href="#NanumGothic-30" transform="translate(121.199982 0)"/>
@@ -2466,7 +2551,7 @@ z
     </g>
    </g>
    <g id="text_30">
-    <!-- 1,070건 -->
+    <!-- 1,104건 -->
     <g style="fill: #15803d" transform="translate(695.069419 94.6512) scale(0.29 -0.29)">
      <defs>
       <path id="NanumGothicBold-2c" d="M 1069,-1139
@@ -2587,45 +2672,46 @@ z
      </defs>
      <use xlink:href="#NanumGothicBold-31"/>
      <use xlink:href="#NanumGothicBold-2c" transform="translate(60.599991 0)"/>
-     <use xlink:href="#NanumGothicBold-30" transform="translate(90.899979 0)"/>
-     <use xlink:href="#NanumGothicBold-37" transform="translate(151.499969 0)"/>
-     <use xlink:href="#NanumGothicBold-30" transform="translate(212.09996 0)"/>
+     <use xlink:href="#NanumGothicBold-31" transform="translate(90.899979 0)"/>
+     <use xlink:href="#NanumGothicBold-30" transform="translate(151.499969 0)"/>
+     <use xlink:href="#NanumGothicBold-34" transform="translate(212.09996 0)"/>
      <use xlink:href="#NanumGothicBold-ac74" transform="translate(272.699951 0)"/>
     </g>
    </g>
    <g id="line2d_33">
-    <path d="M 696.574659,250.654297
-L 704.100856,250.654297
-L 711.627052,250.654297
-L 719.153249,250.429161
-L 726.679446,247.840104
-L 734.205643,242.549421
-L 741.73184,236.020494
-L 749.258037,231.180082
-L 756.784233,228.591024
-L 764.31043,226.001967
-L 771.836627,220.711284
-L 779.362824,213.281815
-L 786.889021,206.415184
-L 794.415218,199.886256
-L 801.941414,194.595574
-L 809.467611,191.556245
-L 816.993808,189.304891
-L 824.520005,185.477588
-L 832.046202,180.97488
-L 839.572399,175.233926
-L 847.098595,169.943243
-L 854.624792,166.115941
-L 862.150989,163.526884
-L 869.677186,161.275529
-L 877.203383,155.872279
-L 884.72958,150.581596
-L 892.255776,146.529158
-L 899.781973,142.47672
-L 907.30817,138.199147
-L 914.834367,136.060361
-L 922.360564,134.259277
-L 929.886761,130.544542
+    <path d="M 696.528201,250.664697
+L 703.822108,250.664697
+L 711.116014,250.664697
+L 718.409921,250.446495
+L 725.703828,247.937173
+L 732.997735,242.809428
+L 740.291642,236.481573
+L 747.585548,231.790231
+L 754.879455,229.280909
+L 762.173362,226.771587
+L 769.467269,221.643842
+L 776.761176,214.443179
+L 784.055082,207.788021
+L 791.348989,201.460165
+L 798.642896,196.33242
+L 805.936803,193.386694
+L 813.23071,191.204675
+L 820.524616,187.495242
+L 827.818523,183.131204
+L 835.11243,177.567055
+L 842.406337,172.43931
+L 849.700244,168.729878
+L 856.994151,166.220556
+L 864.288057,164.038536
+L 871.581964,158.80169
+L 878.875871,153.673945
+L 886.169778,149.746311
+L 893.463685,145.818676
+L 900.757591,141.67284
+L 908.051498,139.599922
+L 915.345405,137.854307
+L 922.639312,134.253975
+L 929.933219,130.544542
 " clip-path="url(#p7b760418f2)" style="fill: none; stroke: #15803d; stroke-width: 2.4; stroke-linecap: square"/>
    </g>
    <g id="PathCollection_3">
@@ -2643,7 +2729,7 @@ z
 " style="stroke: #15803d"/>
     </defs>
     <g clip-path="url(#p7b760418f2)">
-     <use xlink:href="#m04d05963d7" x="929.886761" y="130.544542" style="fill: #15803d; stroke: #15803d"/>
+     <use xlink:href="#m04d05963d7" x="929.933219" y="130.544542" style="fill: #15803d; stroke: #15803d"/>
     </g>
    </g>
   </g>
