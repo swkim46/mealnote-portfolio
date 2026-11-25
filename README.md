@@ -36,10 +36,10 @@ flowchart TB
 <!-- usage-metrics:start -->
 <picture>
   <source media="(max-width: 600px)" srcset="docs/images/usage-mobile.svg">
-  <img src="docs/images/usage.svg" alt="식단노트 사용 추이. 11월 24일 기준 가입 회원 48명, 당일 활성 회원 12명, 누적 식단 기록 1104건" width="1100">
+  <img src="docs/images/usage.svg" alt="식단노트 사용 추이. 11월 25일 기준 가입 회원 49명, 당일 활성 회원 11명, 누적 식단 기록 1139건" width="1100">
 </picture>
 
-2026년 11월 24일까지의 기록입니다. 활성 회원은 그날 식단을 한 번 이상 작성한 회원이며, 가입 회원과 식단 기록은 누적입니다. 테스트 계정은 제외하고, 매일 전날까지 갱신합니다. [집계 기준](docs/reference/사용_현황_집계.md)
+2026년 11월 25일까지의 기록입니다. 활성 회원은 그날 식단을 한 번 이상 작성한 회원이며, 가입 회원과 식단 기록은 누적입니다. 테스트 계정은 제외하고, 매일 전날까지 갱신합니다. [집계 기준](docs/reference/사용_현황_집계.md)
 <!-- usage-metrics:end -->
 
 가입 회원은 활성 사용자와 다릅니다. 집계는 현재 남은 데이터로 다시 계산하므로 계정·기록 삭제 등에 따라 과거 수치도 바뀔 수 있습니다. 이 수치는 운영 규모의 근거이며 기획 변경이 참여율·유지율을 높였다는 인과 근거는 아닙니다.
@@ -142,7 +142,7 @@ Reports run from the day after the previous body-composition measurement through
 In-app guides introduce the main menus and explain phone notification setup. Meal review and message acknowledgement are separate. Trainers receive grouped reminders; member feedback triggers a prompt delivery request alongside periodic checks. After Codex identified an account-access risk, I redesigned recovery so members could recover their own accounts without contact details.
 
 <!-- usage-metrics-en:start -->
-Through November 24, 2026 (KST), the app had 48 registered members and 1104 meal records. On that day, 12 members logged at least one meal. Test accounts are excluded; the charts update daily after the Korean day ends.
+Through November 25, 2026 (KST), the app had 49 registered members and 1139 meal records. On that day, 11 members logged at least one meal. Test accounts are excluded; the charts update daily after the Korean day ends.
 <!-- usage-metrics-en:end -->
 
 These counts show usage, not measured growth or retention caused by product changes. Screenshots use fictional data. Documentation covers the published 2.0–2.4 implementation; automatic next-month routines and the multiple-photo proposal are excluded. Individual user records and production identifiers are not published.
